@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "613966549370",
+    "project_id": "myocirclepatientapp",
+    "storage_bucket": "myocirclepatientapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:613966549370:android:7be321097ec2d910d9c6c3",
+        "android_client_info": {
+          "package_name": "com.myocircle.patientapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKL5fKWuFDy_jgVar4zxIRfoKA1QlfSws"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

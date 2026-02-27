@@ -1,0 +1,2 @@
+C:/Users/PMLS/StudioProjects/myocircle15screens/android/app/.cxx/Debug/3u2h3j42/x86/CMakeFiles/edit_cache.dir
+C:/Users/PMLS/StudioProjects/myocircle15screens/android/app/.cxx/Debug/3u2h3j42/x86/CMakeFiles/rebuild_cache.dir

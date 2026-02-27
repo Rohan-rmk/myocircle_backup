@@ -1,0 +1,2 @@
+C:/Users/Rohan Kamble/StudioProjects/myocircle/android/app/.cxx/RelWithDebInfo/4n83b6t4/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/Rohan Kamble/StudioProjects/myocircle/android/app/.cxx/RelWithDebInfo/4n83b6t4/armeabi-v7a/CMakeFiles/rebuild_cache.dir
