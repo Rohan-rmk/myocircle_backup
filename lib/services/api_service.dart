@@ -1016,12 +1016,13 @@ class ApiService {
       value: true,
       loadLoader: true,
       context: context,
-      endpoint: 'GetExerciseListV2',
+      endpoint: 'GetExerciseListv2',
       body: {
-        "PatientID": patientId,
-        "Mode": mode,
+        "patientID": patientId,
+        "mode": mode,
       },
-      baseURL: "https://myocircleexerciseengine.azurewebsites.net/api",
+      // baseURL: "https://myocircleexerciseengine.azurewebsites.net/api",
+      baseURL: baseUrl,
     );
   }
 
@@ -1036,12 +1037,13 @@ class ApiService {
       value: true,
       loadLoader: false,
       context: context,
-      endpoint: 'GetExerciseListV2',
+      endpoint: 'GetExerciseListv2',
       body: {
-        "PatientID": patientId,
-        "Mode": mode,
+        "patientID": patientId,
+        "mode": mode,
       },
-      baseURL: "https://myocircleexerciseengine.azurewebsites.net/api",
+      // baseURL: "https://myocircleexerciseengine.azurewebsites.net/api",
+      baseURL: baseUrl,
     );
   }
 

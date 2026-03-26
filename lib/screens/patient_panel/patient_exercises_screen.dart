@@ -53,12 +53,41 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
   Map<String, dynamic> exerciseData = {};
   Map<String, dynamic> selectedExercise = {};
 
+  // void getDailyExercises() async {
+  //   final selectedProfileId =
+  //       Provider.of<SessionProvider>(context, listen: false).selectedProfileId;
+  //
+  //   final profileId = Provider.of<SessionProvider>(context, listen: false)
+  //       .userData?['profileId'];
+  //
+  //   int patientId = selectedProfileId != null
+  //       ? int.parse(selectedProfileId.toString())
+  //       : profileId;
+  //
+  //   final response = await ApiService.getDailyExerciseList(
+  //     context: context,
+  //     patientId: patientId,
+  //     mode: 2,
+  //   );
+  //
+  //   print("API Response = $response");
+  //
+  //   /// ✅ Here response is your JSON map
+  //   /// likely contains patientID, exerciseDays, etc.
+  //   if (mounted) {
+  //     setState(() {
+  //       exerciseData = response;
+  //     });
+  //   }
+  // }
+  ///
+  bool isLoading = true;
   void getDailyExercises() async {
     final selectedProfileId =
         Provider.of<SessionProvider>(context, listen: false).selectedProfileId;
 
-    final profileId = Provider.of<SessionProvider>(context, listen: false)
-        .userData?['profileId'];
+    final profileId =
+    Provider.of<SessionProvider>(context, listen: false).userData?['profileId'];
 
     int patientId = selectedProfileId != null
         ? int.parse(selectedProfileId.toString())
@@ -70,16 +99,14 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
       mode: 2,
     );
 
-    print("API Response = $response");
-
-    /// ✅ Here response is your JSON map
-    /// likely contains patientID, exerciseDays, etc.
     if (mounted) {
       setState(() {
         exerciseData = response;
+        isLoading = false; // ✅ loading finished
       });
     }
   }
+  ///
 
 
   ScrollController _listScrollController = ScrollController();
@@ -94,6 +121,14 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
     final width = MediaQuery.of(context).size.width;
     print('width$width');
     print('Exercise Data: $exerciseData');
+    // if (isLoading) {
+    //   return const Scaffold(
+    //     backgroundColor: Color(0xFFF6F5F3),
+    //     body: Center(
+    //       child: CircularProgressIndicator(),
+    //     ),
+    //   );
+    // }
 
     // Extract exercise days and groups from new API response
     final List<dynamic> exerciseDays = exerciseData['exerciseDays'] ?? [];
@@ -103,6 +138,9 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
 
     final List<dynamic> exerciseGroups =
         latestDay?['exerciseGroups'] ?? [];
+    ///
+
+    ///
     /// Finds the first incomplete exercise across all groups
     Map<String, int>? getGlobalFirstIncompleteExercise(
         List<dynamic> exerciseGroups) {
@@ -126,7 +164,7 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
     // Get patient info from new API response
     final int myoPoints = exerciseData['myoPoints'] ?? 0;
     final int progressPercent = exerciseData['progressPercent'] ?? 0;
-    final String profileName = exerciseData['profileName'] ?? '';
+    final String profileName = exerciseData['patientFirstName'] ?? '';
     final String profileImage = exerciseData['profileImage'] ?? '';
 
     // Function to get first incomplete exercise index in a group
@@ -147,12 +185,17 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
     // }
 
 
-    if (exerciseGroups.isEmpty) {
-      return Scaffold(
-        backgroundColor: const Color(0xFFF6F5F3),
-        body: const Center(child: Text("No exercises found")),
-      );
-    }
+    // if (exerciseGroups.isEmpty) {
+    //   return Scaffold(
+    //     backgroundColor: const Color(0xFFF6F5F3),
+    //     body: const Center(child: Text("No exercises found")),
+    //   );
+    // }
+    ///
+
+
+
+    ///
 
 
     return PopScope(
@@ -369,14 +412,13 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                   child: Column(
                     children: [
                       Text(
-                        profileName.isNotEmpty
-                            ? profileName
-                            : "${landingPageData?['profileName']}",
+                        profileName,
                         style: TextStyle(
-                            fontSize: 24,
-                            fontFamily: "Alegreya_Sans",
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff8E8E93)),
+                          fontSize: 24,
+                          fontFamily: "Alegreya_Sans",
+                          fontWeight: FontWeight.w500,
+                          color: Color(0xff8E8E93),
+                        ),
                       ),
                       Container(
                         height: 120,
@@ -482,7 +524,7 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                                     flex: 1,
                                     child: Center(
                                       child: Text(
-                                        "Myopoints",
+                                        "MyoPoints",
                                         style: TextStyle(
                                             fontFamily: "Alegreya_Sans",
                                             fontSize: 16),
@@ -580,8 +622,8 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                           DateTime.parse(exerciseDays[0]['originalExerciseDate']),
                         ),
                         style: TextStyle(
-                          fontFamily: "Alegreya_Sans",
-                          fontSize: 23,
+                          // fontFamily: "Alegreya_Sans",
+                          fontSize: MediaQuery.of(context).size.height * 0.025,
                           fontWeight: FontWeight.w500,
                         ),
                       )
@@ -592,21 +634,34 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                                   // "Date ${DateFormat('dd').format(DateTime.parse(exerciseGroups[0]['date']))}",
                                   exerciseGroups[0]['date'],
                                   style: TextStyle(
-                                      fontFamily: "Alegreya_Sans",
-                                      fontSize: 23,
+                                      // fontFamily: "Alegreya_Sans",
+                                      fontSize: MediaQuery.of(context).size.height * 0.025,
                                       fontWeight: FontWeight.w500),
                                 )
                               : SizedBox(),
-
+                      if (exerciseGroups.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 40),
+                          child: Center(
+                            child: Text(
+                              "No Exercise Assigned",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ),
+                        ) else
                       // Loop through exercise groups
                       for (var groupIndex = 0; groupIndex < exerciseGroups.length; groupIndex++) ...[
 
                         Text(
-                          "Set ${exerciseGroups[groupIndex]['exerciseGroupID']}",
+                          "SET ${exerciseGroups[groupIndex]['exerciseGroupID']}",
                           style: TextStyle(
-                              fontFamily: "Alegreya_Sans",
-                              fontSize: 21,
-                              fontWeight: FontWeight.w300),
+                              // fontFamily: "Alegreya_Sans",
+                              fontSize: MediaQuery.of(context).size.height * 0.025,
+                              fontWeight: FontWeight.w500),
                         ),
 
                         // Get first incomplete exercise index for this group
@@ -648,7 +703,6 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                             } else {
                               isLockExercise = true;
                             }
-
 
                             // Determine if exercise is tappable
                             bool isTappable = isParent || isGoExercise;

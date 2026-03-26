@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math';
 import 'dart:math' as math;
 import 'package:media_kit/media_kit.dart';
@@ -287,6 +288,9 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+
+
+
                             Expanded(
                               child: Padding(
                                 padding: const EdgeInsets.only(left: 25),
@@ -296,7 +300,32 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                                       await sendExerciseResponse(false, selected);
                                     },
                                     child:
-                                    Image.asset(EXERCISE_VIEW_SUBMIT_BTN)),
+                                    // Image.asset(EXERCISE_VIEW_SUBMIT_BTN)
+                                    Container(
+                                      width: double.infinity,
+                                      padding: EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        gradient: LinearGradient(
+                                          colors: [Color(0xff59A3CB), Color(0xff116594)],
+                                        ),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text("Submit",
+                                              style: TextStyle(
+                                                  fontFamily: "Alegreya_Sans",
+                                                  fontSize: 16,
+                                                  color: Colors.white)),
+                                          Icon(Icons.arrow_forward,
+                                              size: 16, color: Colors.white),
+                                        ],
+                                      ),
+                                    ),
+
+                                ),
+
                               ),
                             ),
                             Expanded(
@@ -305,11 +334,42 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                                 child: ScaleButton(
                                   onTap: () {
 
-                                    Navigator.pop(context, false); // ❌ cancelled
-                                  },
-                                  child: Image.asset(EXERCISE_VIEW_CANCEL_BTN),
-                                ),
+                                    // Navigator.pop(context, false);
+                                    ///
+                                    Navigator.pop(context, false);
 
+                                    // reopen previous dialog
+                                    Future.delayed(const Duration(milliseconds: 200), () {
+                                      if (mounted) {
+                                        onComplete();
+                                      }
+                                    });
+                                    ///
+                                  },
+                                  // child: Image.asset(EXERCISE_VIEW_CANCEL_BTN),
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      gradient: LinearGradient(
+                                        colors: [Color(0xff3249B8), Color(0xff5F32B8)],
+                                      ),
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text("Cancel",
+                                            style: TextStyle(
+                                                fontFamily: "Alegreya_Sans",
+                                                fontSize: 16,
+                                                color: Colors.white)),
+                                        Icon(Icons.cancel_outlined,
+                                            size: 16, color: Colors.white),
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ],
@@ -416,8 +476,8 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                             Text(
                               "Complete",
                               style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 21,
+                                fontFamily: "Alegreya_Sans",
                               ),
                             )
                           ],
@@ -458,8 +518,8 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                             Text(
                               "I need help",
                               style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w500,
+                                fontSize: 21,
+                                fontFamily: "Alegreya_Sans",
                               ),
                             )
                           ],
@@ -1016,7 +1076,7 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
       DeviceOrientation.landscapeLeft,
       DeviceOrientation.landscapeRight,
     ]);
-    // await _initCamera();
+    await _initCamera();
   }
 
   void resetOrientation() async {
@@ -1046,6 +1106,8 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
 
   String currentExerciseName = "";
   String currentLoopName = "";
+  bool canExercisesSkip = false;
+  bool canLoopSkip = false;
 
   // ✅ video controller
 
@@ -1063,7 +1125,7 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
     exerciseGroups = widget.exercises;
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _initCamera();   // ✅ CORRECT PLACE
+      // await _initCamera();   // ✅ CORRECT PLACE
 
       _findFirstIncompleteExercise();
 
@@ -1085,6 +1147,9 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
 
         if (!exercise['isExerciseComplete']) {
           final loopExercises = exercise['loopExercises'] as List<dynamic>;
+          canExercisesSkip = exercise['canSkipEducationVideo'];
+          print("canExercisesSkip");
+          print(canExercisesSkip);
           for (int loopIdx = 0; loopIdx < loopExercises.length; loopIdx++) {
             final loopExercise = loopExercises[loopIdx];
 
@@ -1092,6 +1157,10 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
               setState(() {
                 currentExerciseName = exercise['name'] ?? "Exercise";
                 currentLoopName = loopExercise['name'] ?? "Loop";
+
+                canLoopSkip = loopExercise['canSkipLoopVideos'];
+                print(canLoopSkip);
+                print("canLoopSkip");
 
                 currentGroupIndex = groupIdx;
                 currentExerciseIndex = exIdx;
@@ -1122,6 +1191,7 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
       final firstGroup = exerciseGroups[0];
       final firstExercise = firstGroup['exercises'][0];
       final firstLoop = firstExercise['loopExercises'][0];
+
 
       setState(() {
         currentGroupIndex = 0;
@@ -1741,6 +1811,14 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
 
       await _cameraController!.initialize();
 
+      final orientation = MediaQuery.of(context).orientation;
+
+      if (orientation == Orientation.portrait) {
+        await _cameraController!.lockCaptureOrientation(DeviceOrientation.portraitUp);
+      } else {
+        await _cameraController!.lockCaptureOrientation(DeviceOrientation.landscapeLeft);
+      }
+
       if (!mounted) return;
 
       setState(() {
@@ -1777,7 +1855,7 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                   const Center(child: CircularProgressIndicator()),
 
                 Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 20),
+                  padding: const EdgeInsets.only(left: 2, right: 20),
                   child: Row(
                     children: [
                       // Video Player Section
@@ -1788,88 +1866,107 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                           children: [
                             GestureDetector(
                               onTap: _handleScreenTap,
-                              child: AspectRatio(
-                                aspectRatio: 2 / 1,
+                              child: SizedBox.expand(
                                 child: Stack(
                                   children: [
                                     if (_videoReady)
-                                      AspectRatio(
-                                        aspectRatio: 16 / 9,
-                                        child: Video(
-                                          key: ValueKey("${currentExerciseIndex}_${currentLoopIndex}_${_videoController.hashCode}"),
-                                          controller: _videoController!,
-                                          controls: AdaptiveVideoControls,
-                                          fit: BoxFit.contain,
+                                      Video(
+                                        key: ValueKey("${currentExerciseIndex}_${currentLoopIndex}_${_videoController.hashCode}"),
+                                        controller: _videoController!,
+                                        // controls: AdaptiveVideoControls,
+                                        controls: NoVideoControls,
+                                        fit: BoxFit.contain,
+                                      ),
+
+                                    Align(
+                                      alignment: Alignment.topRight,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 6),
+                                        decoration: BoxDecoration(
+                                          color:
+                                          Colors.black,
+                                          borderRadius:
+                                          BorderRadius.circular(10),
+                                        ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+
+                                            // ✅ SHOW ONLY IN EDUCATIONAL VIDEO
+                                            if (!_isPlayingRepsVideo) ...[
+                                              Text(
+                                                currentExerciseName,
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: MediaQuery.of(context).size.width * 0.022,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontFamily: "Alegreya_Sans",
+                                                ),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                "Exercise ${getExerciseProgressText()}",
+                                                style: TextStyle(
+                                                  color: Colors.white70,
+                                                  fontSize: MediaQuery.of(context).size.width * 0.022,
+                                                  fontFamily: "Alegreya_Sans",
+                                                ),
+                                              ),
+
+                                            ],
+
+                                            // ✅ SHOW ONLY IN LOOP VIDEO
+                                            if (_isPlayingRepsVideo) ...[
+                                              Text(
+                                                currentLoopName,
+                                                style: TextStyle(
+                                                  color: Colors.white70,
+                                                  fontSize: MediaQuery.of(context).size.width * 0.02,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontFamily: "Alegreya_Sans",
+                                                ),
+                                              ),
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                "Loop ${getLoopProgressText()}",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: MediaQuery.of(context).size.width * 0.02,
+                                                  fontWeight: FontWeight.w600,
+                                                  fontFamily: "Alegreya_Sans",
+                                                ),
+                                              ),
+                                            ],
+                                          ],
                                         )
                                       ),
+                                    ),
 
-                                    Positioned(
-                                      top: 10,
-                                      right: 10,
+                                    canExercisesSkip == true || canLoopSkip == true?Padding(
+                                      padding: const EdgeInsets.only(right: 27.5,bottom: 9),
                                       child: Align(
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 12, vertical: 8),
-                                          decoration: BoxDecoration(
-                                            color:
-                                            Colors.black.withOpacity(0.5),
-                                            borderRadius:
-                                            BorderRadius.circular(10),
+                                        alignment: Alignment.bottomRight,
+                                        child: MaterialButton(
+                                          color: Colors.indigo,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(8),
+                                            side: const BorderSide(
+                                              color: Color(0xFF00E5FF),
+                                              width: 1,
+                                            ),
                                           ),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.end,
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-
-                                              // ✅ SHOW ONLY IN EDUCATIONAL VIDEO
-                                              if (!_isPlayingRepsVideo) ...[
-                                                Text(
-                                                  currentExerciseName,
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 16,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontFamily: "Alegreya_Sans",
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 2),
-                                                Text(
-                                                  "Exercise ${getExerciseProgressText()}",
-                                                  style: const TextStyle(
-                                                    color: Colors.white70,
-                                                    fontSize: 14,
-                                                    fontFamily: "Alegreya_Sans",
-                                                  ),
-                                                ),
-                                              ],
-
-                                              // ✅ SHOW ONLY IN LOOP VIDEO
-                                              if (_isPlayingRepsVideo) ...[
-                                                Text(
-                                                  currentLoopName,
-                                                  style: const TextStyle(
-                                                    color: Colors.white70,
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontFamily: "Alegreya_Sans",
-                                                  ),
-                                                ),
-                                                const SizedBox(height: 2),
-                                                Text(
-                                                  "Loop ${getLoopProgressText()}",
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 14,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontFamily: "Alegreya_Sans",
-                                                  ),
-                                                ),
-                                              ],
-                                            ],
-                                          )
+                                          onPressed: () {
+                                            _handleSkip();
+                                          },
+                                          child: const Text(
+                                            "Skip",
+                                            style: TextStyle(color: Colors.white),
+                                          ),
                                         ),
                                       ),
-                                    ),
+                                    ):SizedBox.shrink(),
 
                                     // overlay buttons (your same)
                                     if (showOverlay && isPlaying)
@@ -1883,9 +1980,7 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                                             child: SizedBox(
                                               width: 300,
                                               child: Row(
-                                                mainAxisAlignment:
-                                                MainAxisAlignment
-                                                    .spaceBetween,
+                                                mainAxisAlignment: MainAxisAlignment.center,
                                                 children: [
                                                   SizedBox(width: 50),
                                                   GestureDetector(
@@ -1910,28 +2005,28 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                                                       ),
                                                     ),
                                                   ),
-                                                  GestureDetector(
-                                                    onTap: _handleSkip,
-                                                    child: Container(
-                                                      width: 50,
-                                                      height: 50,
-                                                      decoration: BoxDecoration(
-                                                        color: Colors.black
-                                                            .withOpacity(0.5),
-                                                        shape: BoxShape.circle,
-                                                        border: Border.all(
-                                                          color: Colors.white
-                                                              .withOpacity(0.8),
-                                                          width: 2,
-                                                        ),
-                                                      ),
-                                                      child: Icon(
-                                                        Icons.skip_next_rounded,
-                                                        size: 30,
-                                                        color: Colors.white,
-                                                      ),
-                                                    ),
-                                                  ),
+                                                  // GestureDetector(
+                                                  //   onTap: _handleSkip,
+                                                  //   child: Container(
+                                                  //     width: 50,
+                                                  //     height: 50,
+                                                  //     decoration: BoxDecoration(
+                                                  //       color: Colors.black
+                                                  //           .withOpacity(0.5),
+                                                  //       shape: BoxShape.circle,
+                                                  //       border: Border.all(
+                                                  //         color: Colors.white
+                                                  //             .withOpacity(0.8),
+                                                  //         width: 2,
+                                                  //       ),
+                                                  //     ),
+                                                  //     child: Icon(
+                                                  //       Icons.skip_next_rounded,
+                                                  //       size: 30,
+                                                  //       color: Colors.white,
+                                                  //     ),
+                                                  //   ),
+                                                  // ),
                                                 ],
                                               ),
                                             ),
@@ -1945,7 +2040,7 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                                           width: 300,
                                           child: Row(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.center,
                                             children: [
                                               SizedBox(width: 50),
                                               GestureDetector(
@@ -1970,28 +2065,28 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                                                   ),
                                                 ),
                                               ),
-                                              GestureDetector(
-                                                onTap: _handleSkip,
-                                                child: Container(
-                                                  width: 50,
-                                                  height: 50,
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.black
-                                                        .withOpacity(0.5),
-                                                    shape: BoxShape.circle,
-                                                    border: Border.all(
-                                                      color: Colors.white
-                                                          .withOpacity(0.8),
-                                                      width: 2,
-                                                    ),
-                                                  ),
-                                                  child: Icon(
-                                                    Icons.skip_next_rounded,
-                                                    size: 30,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
+                                              // GestureDetector(
+                                              //   onTap: _handleSkip,
+                                              //   child: Container(
+                                              //     width: 50,
+                                              //     height: 50,
+                                              //     decoration: BoxDecoration(
+                                              //       color: Colors.black
+                                              //           .withOpacity(0.5),
+                                              //       shape: BoxShape.circle,
+                                              //       border: Border.all(
+                                              //         color: Colors.white
+                                              //             .withOpacity(0.8),
+                                              //         width: 2,
+                                              //       ),
+                                              //     ),
+                                              //     child: Icon(
+                                              //       Icons.skip_next_rounded,
+                                              //       size: 30,
+                                              //       color: Colors.white,
+                                              //     ),
+                                              //   ),
+                                              // ),
                                             ],
                                           ),
                                         ),
@@ -2007,17 +2102,46 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                       SizedBox(width: 20),
 
                       _isInitialized && enableCamera
-                          ? Expanded(
+                      //     ? Expanded(
+                      //   flex: 2,
+                      //   child: AspectRatio(
+                      //     aspectRatio: 1,
+                      //     child: Transform(
+                      //       alignment: Alignment.center,
+                      //       transform: Matrix4.rotationY(math.pi),
+                      //       child: CameraPreview(_cameraController!),
+                      //     ),
+                      //
+                      //   ),
+                      // )
+                     ? Expanded(
                         flex: 2,
                         child: AspectRatio(
                           aspectRatio: 1,
-                          child: Transform(
-                            alignment: Alignment.center,
-                            transform: Matrix4.rotationY(math.pi),
-                            child: CameraPreview(_cameraController!),
+                          child: Builder(
+                            builder: (context) {
+                              Widget preview = CameraPreview(_cameraController!);
+
+                              if (Platform.isIOS) {
+                                preview = Transform.rotate(
+                                  // angle: math.pi / 200,
+                                  angle: 0, // your working iOS fix
+                                  child: preview,
+                                );
+                              }
+
+
+                              preview = Transform.scale(
+                                scaleX: Platform.isIOS ? 1 : -1,
+                                child: preview,
+                              );
+
+                              return preview;
+                            },
                           ),
                         ),
                       )
+
                           : SizedBox(),
                     ],
                   ),
@@ -2039,8 +2163,8 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                             SizedBox(height: 55, width: 55),
                             _isPlayingRepsVideo
                                 ? Container(
-                              height: 100,
-                              width: 100,
+                              height: MediaQuery.of(context).size.height * 0.26,
+                              width: MediaQuery.of(context).size.height * 0.26,
                               decoration: BoxDecoration(
                                 color: Color(0xff000000).withOpacity(0.8),
                                 borderRadius: BorderRadius.circular(20),

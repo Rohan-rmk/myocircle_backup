@@ -5,6 +5,8 @@ import 'package:scale_button/scale_button.dart';
 import 'package:provider/provider.dart';
 
 import '../../../components/components_path.dart';
+import '../../../enums/patient_tab.dart';
+import '../../../providers/index_provider.dart';
 import '../../../services/api_service.dart';
 import '../../../providers/session_provider.dart';
 
@@ -63,7 +65,7 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
   bool allowPin = false;
   bool showSuccess = false;
   bool isLoading = false;
-
+  List<String> _prevValues = List.filled(4, '');
   @override
   Widget build(BuildContext context) {
     final session = Provider.of<SessionProvider>(context, listen: false);
@@ -72,13 +74,13 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
     return Scaffold(
       backgroundColor: Color(0xfff6f5f3),
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        forceMaterialTransparency: true,
-        actions: [
-          Expanded(child: ProfileHeader()),
-        ],
-      ),
+      // appBar: AppBar(
+      //   automaticallyImplyLeading: false,
+      //   forceMaterialTransparency: true,
+      //   actions: [
+      //     Expanded(child: ProfileHeader()),
+      //   ],
+      // ),
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -107,17 +109,33 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                         ),
                       ],
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(50),
-                      child: const Text(
-                        'PIN updated successfully',
-                        style: TextStyle(
-                          fontFamily: "Alegreya_Sans",
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(50),
+                          child: const Text(
+                            'PIN updated successfully',
+                            style: TextStyle(
+                              fontFamily: "Alegreya_Sans",
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
                         ),
-                      ),
+
+                        ScaleButton(
+                            onTap: () {
+                              // Navigator.pop(context);
+                              Provider.of<IndexProvider>(context, listen: false)
+                                  .setIndex(PatientTab.home.index);
+                            },
+                            child: Image.asset(
+                              EXERCISE_VIEW_OK_BTN,
+                              fit: BoxFit.cover,
+                            )),
+
+                      ],
                     ),
                   ),
                 ),
@@ -332,44 +350,78 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                                       }
                                     },
                                     child: TextField(
-                                      onTap: () {
-                                        _codeControllers[index].clear();
-                                      },
-                                      onTapOutside: (event) {
-                                        setState(() {
-                                          _codeFocusNodes[index].unfocus();
-                                        });
-                                      },
                                       controller: _codeControllers[index],
                                       focusNode: _codeFocusNodes[index],
                                       textAlign: TextAlign.center,
                                       keyboardType: TextInputType.number,
-                                      maxLength: 1,
                                       obscureText: true,
+
                                       style: const TextStyle(
                                         fontSize: 24,
                                         fontWeight: FontWeight.bold,
                                       ),
+
                                       decoration: const InputDecoration(
                                         counterText: "",
                                         border: InputBorder.none,
                                       ),
+
+                                      onTapOutside: (event) {
+                                        _codeFocusNodes[index].unfocus();
+                                      },
+
                                       onChanged: (value) {
+                                        final prev = _prevValues[index];
+
+                                        // 🔥 PASTE SUPPORT
+                                        if (value.length > 1) {
+                                          final pasted = value.replaceAll(RegExp(r'[^0-9]'), '').split('');
+
+                                          for (int i = 0; i < _codeControllers.length; i++) {
+                                            _codeControllers[i].text =
+                                            i < pasted.length ? pasted[i] : '';
+                                            _prevValues[i] = _codeControllers[i].text;
+                                          }
+
+                                          int lastIndex = pasted.length >= 4 ? 3 : pasted.length;
+                                          _codeFocusNodes[lastIndex].requestFocus();
+                                          return;
+                                        }
+
+                                        // ✅ FORWARD MOVE
                                         if (value.isNotEmpty) {
+                                          _prevValues[index] = value;
+
                                           if (index < 3) {
-                                            FocusScope.of(context).requestFocus(
-                                              _codeFocusNodes[index + 1],
-                                            );
+                                            _codeFocusNodes[index + 1].requestFocus();
                                           } else {
-                                            FocusScope.of(context).unfocus();
+                                            _codeFocusNodes[index].unfocus();
+                                          }
+                                          return;
+                                        }
+
+                                        // 🔥 BACKSPACE FIX (IMPORTANT)
+                                        if (value.isEmpty && prev.isNotEmpty) {
+                                          _prevValues[index] = '';
+
+                                          if (index > 0) {
+                                            _codeFocusNodes[index - 1].requestFocus();
+
+                                            // cursor at end so continuous delete works
+                                            Future.microtask(() {
+                                              _codeControllers[index - 1].selection =
+                                                  TextSelection.collapsed(offset: 1);
+                                            });
                                           }
                                         }
                                       },
+
                                       inputFormatters: [
                                         FilteringTextInputFormatter.digitsOnly,
-                                        LengthLimitingTextInputFormatter(1),
                                       ],
-                                    ),
+
+                                      autofillHints: const [AutofillHints.oneTimeCode],
+                                    )
                                   ),
                                 ),
                               ),
@@ -492,9 +544,15 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                     child: Padding(
                   padding: const EdgeInsets.only(left: 25),
                   child: ScaleButton(
+                      // onTap: () {
+                      //   Navigator.pop(context);
+                      // },
+                    ///
                       onTap: () {
-                        Navigator.pop(context);
+                      Provider.of<IndexProvider>(context, listen: false)
+                          .setIndex(PatientTab.home.index);
                       },
+                      ///
                       child: Image.asset(EXERCISE_VIEW_CANCEL_BTN)),
                 ))
               ]),

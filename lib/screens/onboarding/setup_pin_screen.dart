@@ -48,7 +48,7 @@ class _SetupPinScreenState extends State<SetupPinScreen> {
     // Convert to int safely
     return int.tryParse(pin);
   }
-
+  List<String> _prevPinValues = List.filled(4, '');
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -179,46 +179,78 @@ class _SetupPinScreenState extends State<SetupPinScreen> {
                                         }
                                       },
                                       child: TextField(
-                                        onTap: () {
-                                          _pinControllers[index].clear();
-                                        },
-                                        onTapOutside: (event) {
-                                          setState(() {
-                                            _pinFocusNodes[index].unfocus();
-                                          });
-                                        },
                                         cursorColor: Color(0xff0D4081),
                                         controller: _pinControllers[index],
                                         focusNode: _pinFocusNodes[index],
                                         textAlign: TextAlign.center,
                                         keyboardType: TextInputType.number,
-                                        maxLength: 1,
                                         obscureText: true,
+
                                         style: const TextStyle(
                                           fontSize: 24,
                                           fontWeight: FontWeight.bold,
                                         ),
+
                                         decoration: const InputDecoration(
                                           counterText: "",
                                           border: InputBorder.none,
                                         ),
+
+                                        onTapOutside: (event) {
+                                          _pinFocusNodes[index].unfocus();
+                                        },
+
                                         onChanged: (value) {
+                                          final prev = _prevPinValues[index];
+
+                                          // 🔥 PASTE SUPPORT
+                                          if (value.length > 1) {
+                                            final pasted = value.replaceAll(RegExp(r'[^0-9]'), '').split('');
+
+                                            for (int i = 0; i < _pinControllers.length; i++) {
+                                              _pinControllers[i].text =
+                                              i < pasted.length ? pasted[i] : '';
+                                              _prevPinValues[i] = _pinControllers[i].text;
+                                            }
+
+                                            int lastIndex = pasted.length >= 4 ? 3 : pasted.length;
+                                            _pinFocusNodes[lastIndex].requestFocus();
+                                            return;
+                                          }
+
+                                          // ✅ FORWARD MOVE
                                           if (value.isNotEmpty) {
+                                            _prevPinValues[index] = value;
+
                                             if (index < 3) {
-                                              FocusScope.of(context)
-                                                  .requestFocus(
-                                                _pinFocusNodes[index + 1],
-                                              );
+                                              _pinFocusNodes[index + 1].requestFocus();
                                             } else {
-                                              FocusScope.of(context).unfocus();
+                                              _pinFocusNodes[index].unfocus();
+                                            }
+                                            return;
+                                          }
+
+                                          // 🔥 CONTINUOUS BACKSPACE (KEY FIX)
+                                          if (value.isEmpty && prev.isNotEmpty) {
+                                            _prevPinValues[index] = '';
+
+                                            if (index > 0) {
+                                              _pinFocusNodes[index - 1].requestFocus();
+
+                                              // put cursor at end so next backspace works
+                                              Future.microtask(() {
+                                                _pinControllers[index - 1].selection =
+                                                    TextSelection.collapsed(offset: 1);
+                                              });
                                             }
                                           }
                                         },
+
                                         inputFormatters: [
-                                          FilteringTextInputFormatter
-                                              .digitsOnly,
-                                          LengthLimitingTextInputFormatter(1),
+                                          FilteringTextInputFormatter.digitsOnly,
                                         ],
+
+                                        autofillHints: const [AutofillHints.oneTimeCode],
                                       ),
                                     ),
                                   ),
@@ -271,12 +303,22 @@ class _SetupPinScreenState extends State<SetupPinScreen> {
                                 });
                                 withNullValues.add("firstTime");
                                 Provider.of<FirstTimeUserProvider>(context,
-                                        listen: false)
-                                    .setFirstTime(true);
+                                        listen: false).setFirstTime(true);
                                 Provider.of<FirstTimeUserProvider>(context,
                                         listen: false)
                                     .setAge(loginResponse['data']['age']);
-                                await session.setSelectedProfileId(widget.profileId);
+                                // await session.setSelectedProfileId(widget.profileId);
+
+
+                                final data = loginResponse['data'];
+
+                                if (data['isPatient'] == "Yes") {
+                                  await session.setSelectedProfileId(data['profileId']);
+                                } else {
+                                  await session.setSelectedProfileId(
+                                    data['familyMembers'][0]['profileId'],
+                                  );
+                                }
                                 debugPrint(
                                   "📌 selectedProfileId BEFORE navigation: ${session.selectedProfileId}",
                                 );
@@ -285,6 +327,12 @@ class _SetupPinScreenState extends State<SetupPinScreen> {
                                     MaterialPageRoute(
                                         builder: (context) => BridgeScreen()));
                               }
+                            } else if (SetupPinResponse['status'] != 200) {
+                              SnackbarHelper.showSnackbar(
+                                SetupPinResponse['message'] ?? "Failed to set PIN",
+                                color: Colors.red,
+                              );
+                              return;
                             }
                           }
                         } else {

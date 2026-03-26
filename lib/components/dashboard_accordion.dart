@@ -111,7 +111,8 @@ class _DashboardAccordionState extends State<DashboardAccordion> {
 
   double getContainerHeight(int index) {
     final count = getSetWiseExercisesForIndex(index).length;
-    return 250 + (count * 85);
+    // return 250 + (count * 85);
+    return 305 + (count * 85);
   }
 
 
@@ -198,141 +199,143 @@ class _DashboardAccordionState extends State<DashboardAccordion> {
           const SizedBox(height: 12),
 
           // ✅ FULL HEIGHT SCROLL LIST
-          Expanded(
-            child: ListView.builder(
-              shrinkWrap: true, // ✅ take full height
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: exercises.length,
-              itemBuilder: (context, i) {
-                final exercise = exercises[i];
+          ListView.builder(
+            shrinkWrap: true, // ✅ take full height
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: exercises.length,
+            itemBuilder: (context, i) {
+              final exercise = exercises[i];
+              print("exercise*****");
+              print(exercise);
+              print("exercise*****");
 
-                // ✅ Set Header
-                if (exercise["type"] == "header") {
-                  return Container(
-                    width: double.infinity,
-                    margin: const EdgeInsets.only(bottom: 10, top: 10),
-                    padding:
-                    const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                    decoration: BoxDecoration(
-                      color: const Color(0xff0D4081),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      exercise["title"] ?? "",
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                        fontFamily: "Alegreya_Sans",
-                      ),
-                    ),
-                  );
-                }
-
-                // ✅ Exercise Item
+              // ✅ Set Header
+              if (exercise["type"] == "header") {
                 return Container(
-                  margin: const EdgeInsets.only(bottom: 8),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 8,
-                        child: Container(
-                          height: 80,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[50],
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(10),
-                              bottomLeft: Radius.circular(10),
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              Expanded(
-                                child: Container(
-                                  padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xff387AED),
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(10),
-                                      topRight: Radius.circular(10),
-                                    ),
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Icon(Icons.play_arrow,
-                                          color: Colors.white, size: 20),
-                                      Expanded(
-                                        child: Text(
-                                          exercise['name'] ?? "",
-                                          textAlign: TextAlign.center,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: "Alegreya_Sans",
-                                            fontSize: 18,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 20),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                child: Container(
-                                  alignment: Alignment.center,
-                                  decoration: const BoxDecoration(
-                                    color: Color(0xff0D4081),
-                                    borderRadius: BorderRadius.only(
-                                      bottomLeft: Radius.circular(10),
-                                      bottomRight: Radius.circular(10),
-                                    ),
-                                  ),
-                                  child: Text(
-                                    "Reps ${exercise['requiredTotalRepetitions'] ?? 0}",
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontFamily: "Alegreya_Sans",
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        flex: 2,
-                        child: Container(
-                          height: 80,
-                          alignment: Alignment.center,
-                          decoration: const BoxDecoration(
-                            color: Color(0xffD9D9D9),
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(10),
-                              bottomRight: Radius.circular(10),
-                            ),
-                          ),
-                          child: Image.asset(
-                            exercise['isExerciseComplete'] == true
-                                ? COMPLETE
-                                : PENDING,
-                            width: 30,
-                            height: 30,
-                          ),
-                        ),
-                      ),
-                    ],
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 10, top: 10),
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  decoration: BoxDecoration(
+                    color: const Color(0xff0D4081),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    exercise["title"] ?? "",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                      fontFamily: "Alegreya_Sans",
+                    ),
                   ),
                 );
-              },
-            ),
+              }
+
+              // ✅ Exercise Item
+              return Container(
+                margin: const EdgeInsets.only(bottom: 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 8,
+                      child: Container(
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(10),
+                            bottomLeft: Radius.circular(10),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding:
+                                const EdgeInsets.symmetric(horizontal: 8),
+                                decoration: const BoxDecoration(
+                                  color: Color(0xff387AED),
+                                  borderRadius: BorderRadius.only(
+                                    topLeft: Radius.circular(10),
+                                    topRight: Radius.circular(10),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Icon(Icons.play_arrow,
+                                        color: Colors.white, size: 20),
+                                    Expanded(
+                                      child: Text(
+                                        exercise['name'] ?? "",
+                                        textAlign: TextAlign.center,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: "Alegreya_Sans",
+                                          fontSize: MediaQuery.of(context).size.height * 0.02,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 20),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                alignment: Alignment.center,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xff0D4081),
+                                  borderRadius: BorderRadius.only(
+                                    bottomLeft: Radius.circular(10),
+                                    bottomRight: Radius.circular(10),
+                                  ),
+                                ),
+                                child: Text(
+                                  "Reps ${exercise['requiredTotalRepetitions'] ?? 0}",
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 16,
+                                    fontFamily: "Alegreya_Sans",
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        height: 80,
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(
+                          color: Color(0xffD9D9D9),
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(10),
+                            bottomRight: Radius.circular(10),
+                          ),
+                        ),
+                        child: Image.asset(
+                          exercise['isExerciseComplete'] == true
+                              ? COMPLETE
+                              : INCOMPLETE,
+                          width: 30,
+                          height: 30,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
 
           const SizedBox(height: 12),

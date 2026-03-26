@@ -5,4 +5,9 @@ enum PatientTab {
   exercise,
   messages,
   report,
+  ///
+  resetPin,        // 👈 add
+  changeAvatar,    // 👈 add
+  therapist,
+  ///
 }

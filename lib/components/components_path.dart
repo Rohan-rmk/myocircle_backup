@@ -90,7 +90,7 @@ const DOCTOR_AVATAR_RING =
     "assets/components/patient_messages_screen/doctor_avatar_ring.png";
 const DOCTOR_AVATAR_BG =
     "assets/components/patient_messages_screen/doctor_avatar_bg.png";
-const DOCTOR_TEST = "assets/components/patient_messages_screen/doctor_test.png";
+const DOCTOR_TEST = "assets/components/patient_messages_screen/user-1.png";
 const EXERCISE_AVATAR_FRAME_IN =
     "assets/components/patient_exercises_screen/avatar_frame_in.png";
 const EXERCISE_AVATAR_FRAME_IN1 =

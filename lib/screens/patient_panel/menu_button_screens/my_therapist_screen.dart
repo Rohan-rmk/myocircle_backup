@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:myocircle15screens/components/profile_header.dart';
 import 'package:myocircle15screens/providers/session_provider.dart';
@@ -23,18 +25,19 @@ class _MyTherapistScreenState extends State<MyTherapistScreen> {
         ' ' +
         userData?['therapistInfo']['lastName'];
     final therapistEmail = userData?['therapistInfo']['email'];
+    final profileImg = userData?["therapistInfo"]["therapistProfileImage"];
     dynamic therapistAddress = userData?['therapistInfo']['address'];
     if (therapistAddress == null) therapistAddress = "Not Available";
     return Scaffold(
       backgroundColor: Color(0xfff6f5f3),
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        forceMaterialTransparency: true,
-        actions: [
-          Expanded(child: ProfileHeader()),
-        ],
-      ),
+      // appBar: AppBar(
+      //   automaticallyImplyLeading: false,
+      //   forceMaterialTransparency: true,
+      //   actions: [
+      //     Expanded(child: ProfileHeader()),
+      //   ],
+      // ),
       body: SafeArea(
         child: !showFull
             ? Padding(
@@ -51,35 +54,83 @@ class _MyTherapistScreenState extends State<MyTherapistScreen> {
                         children: [
                           Padding(
                             padding: const EdgeInsets.all(8.0),
+                            // child: Container(
+                            //   height: 150,
+                            //   width: 150,
+                            //   decoration: BoxDecoration(
+                            //       shape: BoxShape.circle,
+                            //       boxShadow: [
+                            //         BoxShadow(
+                            //           color: Colors.black54,
+                            //           blurRadius: 10,
+                            //           spreadRadius: 0,
+                            //           offset: Offset(6, 6),
+                            //         )
+                            //       ]),
+                            //   child: Padding(
+                            //     padding: const EdgeInsets.all(4),
+                            //     child: Container(
+                            //         decoration: BoxDecoration(
+                            //             image: DecorationImage(
+                            //                 image: AssetImage(
+                            //                   AVATAR_RING,
+                            //                 ),
+                            //                 fit: BoxFit.fill)),
+                            //         child: Padding(
+                            //           padding: const EdgeInsets.all(8.0),
+                            //           // child: Image.asset(
+                            //           //   DOCTOR_TEST,
+                            //           //   fit: BoxFit.contain,
+                            //           // ),
+                            //           child: profileImg != null && profileImg.toString().isNotEmpty
+                            //               ? Image.memory(
+                            //             base64Decode(profileImg),
+                            //             fit: BoxFit.contain,
+                            //           )
+                            //               : Image.asset(
+                            //             DOCTOR_TEST,
+                            //             fit: BoxFit.contain,
+                            //           ),
+                            //         )),
+                            //   ),
+                            // ),
                             child: Container(
                               height: 150,
                               width: 150,
                               decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black54,
-                                      blurRadius: 10,
-                                      spreadRadius: 0,
-                                      offset: Offset(6, 6),
-                                    )
-                                  ]),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black54,
+                                    blurRadius: 10,
+                                    spreadRadius: 0,
+                                    offset: Offset(6, 6),
+                                  )
+                                ],
+                              ),
                               child: Padding(
                                 padding: const EdgeInsets.all(4),
                                 child: Container(
-                                    decoration: BoxDecoration(
-                                        image: DecorationImage(
-                                            image: AssetImage(
-                                              AVATAR_RING,
-                                            ),
-                                            fit: BoxFit.fill)),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Image.asset(
-                                        DOCTOR_TEST,
-                                        fit: BoxFit.contain,
-                                      ),
-                                    )),
+                                  decoration: BoxDecoration(
+                                    image: DecorationImage(
+                                      image: AssetImage(AVATAR_RING),
+                                      fit: BoxFit.fill,
+                                    ),
+                                  ),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ClipOval(
+                                      child: profileImg != null && profileImg.toString().isNotEmpty
+                                          ? Image.memory(
+                                        base64Decode(profileImg),
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                      )
+                                          : Icon(Icons.person,color: Colors.white,size: 70)
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),

@@ -18,6 +18,9 @@ class SessionProvider with ChangeNotifier {
   bool? get isPatient => _isPatient;
   bool get showPopup => _showPopup;
 
+  String? _profileName;
+  String? get profileName => _profileName;
+
   void setUserData(Map<String, dynamic> data, String uniqueId, int pin) {
     _userData = data;
     _uniqueId = uniqueId;
@@ -64,6 +67,21 @@ class SessionProvider with ChangeNotifier {
 
     debugPrint("💾 selectedProfileId saved to SharedPreferences: $value");
   }
+  ///
+  Future<void> setSelectedProfileName(String value) async {
+    debugPrint("➡️ setSelectedProfileName called with value: $value");
+
+    _profileName = value;
+    notifyListeners();
+
+    debugPrint("✅ profileName set in memory: $_profileName");
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('profileName', value);
+
+    debugPrint("💾 selectedProfileName saved to SharedPreferences: $value");
+  }
+  ///
 
   void resetAll() async {
     _userData = null;
@@ -98,6 +116,7 @@ class SessionProvider with ChangeNotifier {
   Future<void> loadSelectedProfileId() async {
     final prefs = await SharedPreferences.getInstance();
     _selectedProfileId = prefs.getInt('selectedProfileId');
+    _profileName = prefs.getString('profileName');
     notifyListeners();
   }
 }

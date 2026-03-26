@@ -31,20 +31,52 @@ class PatientsCustomNavBar extends StatelessWidget {
     );
   }
 
+  ///
+  // String getTabIcon(PatientTab tab) {
+  //   switch (tab) {
+  //     case PatientTab.home:
+  //       return HOME_ICON;
+  //     case PatientTab.dashboard:
+  //       return DASHBOARD_ICON;
+  //     case PatientTab.leaderboard:
+  //       return LEADERBOARD_ICON;
+  //     case PatientTab.exercise:
+  //       return EXERCISE_ICON;
+  //     case PatientTab.messages:
+  //       return MESSAGES_ICON;
+  //     case PatientTab.report:
+  //       return REPORT_ICON;
+  //   }
+  // }
+///
   String getTabIcon(PatientTab tab) {
     switch (tab) {
       case PatientTab.home:
         return HOME_ICON;
+
       case PatientTab.dashboard:
         return DASHBOARD_ICON;
+
       case PatientTab.leaderboard:
         return LEADERBOARD_ICON;
+
       case PatientTab.exercise:
         return EXERCISE_ICON;
+
       case PatientTab.messages:
         return MESSAGES_ICON;
+
       case PatientTab.report:
         return REPORT_ICON;
+
+      case PatientTab.resetPin:
+        return MENU_KEY_ICON;
+
+      case PatientTab.changeAvatar:
+        return MENU_AVATAR_ICON;
+
+      case PatientTab.therapist:
+        return MENU_THERAPIST_ICON;
     }
   }
 }

@@ -43,7 +43,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     // Convert to int safely
     return int.tryParse(pin);
   }
-
+  List<String> _previousValues = List.filled(6, '');
   FocusNode _emailFocus = FocusNode();
   @override
   Widget build(BuildContext context) {
@@ -137,10 +137,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                             child: Container(
                                               decoration: BoxDecoration(
                                                 color: Color(0xffF5F5F5),
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
+                                                borderRadius: BorderRadius.circular(6),
                                               ),
                                               child: TextField(
+                                                keyboardType: TextInputType.emailAddress,
                                                 cursorColor: Color(0xff0D4081),
                                                 focusNode: _emailFocus,
                                                 onTapOutside: (event) {
@@ -222,19 +222,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                   child: KeyboardListener(
                                                     focusNode: FocusNode(),
                                                     onKeyEvent: (event) {
-                                                      if (event
-                                                              is KeyDownEvent &&
+                                                      if (event is KeyDownEvent &&
                                                           event.logicalKey ==
                                                               LogicalKeyboardKey
                                                                   .backspace &&
                                                           _codeControllers[
-                                                                  index]
-                                                              .text
-                                                              .isEmpty &&
+                                                                  index].text.isEmpty &&
                                                           index > 0) {
-                                                        _codeFocusNodes[
-                                                                index - 1]
-                                                            .requestFocus();
+                                                        _codeFocusNodes[index - 1].requestFocus();
                                                       }
                                                     },
                                                     child: TextField(
@@ -245,23 +240,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                         });
                                                       },
                                                       onTap: () {
-                                                        _codeControllers[index]
-                                                            .clear();
+                                                        // _codeControllers[index].clear();
                                                       },
                                                       cursorColor:
                                                           Color(0xff0D4081),
                                                       controller:
-                                                          _codeControllers[
-                                                              index],
+                                                          _codeControllers[index],
                                                       focusNode:
-                                                          _codeFocusNodes[
-                                                              index],
+                                                          _codeFocusNodes[index],
                                                       textAlign:
                                                           TextAlign.center,
                                                       obscureText: true,
-                                                      keyboardType:
-                                                          TextInputType.number,
-                                                      maxLength: 1,
+                                                      keyboardType: TextInputType.number,
+
                                                       style: const TextStyle(
                                                         fontSize: 20,
                                                       ), // Slightly reduced font size
@@ -273,27 +264,72 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                         contentPadding:
                                                             EdgeInsets.zero,
                                                       ),
+                                                      // onChanged: (value) {
+                                                      //   if (value.isNotEmpty) {
+                                                      //     if (index < 5) {
+                                                      //       FocusScope.of(
+                                                      //               context)
+                                                      //           .requestFocus(
+                                                      //         _codeFocusNodes[
+                                                      //             index + 1],
+                                                      //       );
+                                                      //     } else {
+                                                      //       FocusScope.of(
+                                                      //               context)
+                                                      //           .unfocus();
+                                                      //     }
+                                                      //   }
+                                                      // },
+                                                      ///
                                                       onChanged: (value) {
+                                                        final prev = _previousValues[index];
+
+                                                        // 🔥 PASTE CASE
+                                                        if (value.length > 1) {
+                                                          final pasted = value.replaceAll(RegExp(r'[^0-9]'), '').split('');
+
+                                                          for (int i = 0; i < _codeControllers.length; i++) {
+                                                            _codeControllers[i].text =
+                                                            i < pasted.length ? pasted[i] : '';
+                                                            _previousValues[i] = _codeControllers[i].text;
+                                                          }
+
+                                                          int lastIndex = pasted.length >= 6 ? 5 : pasted.length;
+                                                          _codeFocusNodes[lastIndex].requestFocus();
+                                                          return;
+                                                        }
+
+                                                        // ✅ NORMAL INPUT
                                                         if (value.isNotEmpty) {
+                                                          _previousValues[index] = value;
+
                                                           if (index < 5) {
-                                                            FocusScope.of(
-                                                                    context)
-                                                                .requestFocus(
-                                                              _codeFocusNodes[
-                                                                  index + 1],
-                                                            );
+                                                            _codeFocusNodes[index + 1].requestFocus();
                                                           } else {
-                                                            FocusScope.of(
-                                                                    context)
-                                                                .unfocus();
+                                                            _codeFocusNodes[index].unfocus();
+                                                          }
+                                                          return;
+                                                        }
+
+                                                        // 🔥 CONTINUOUS BACKSPACE FIX
+                                                        if (value.isEmpty) {
+                                                          _previousValues[index] = '';
+
+                                                          if (index > 0) {
+                                                            // Move to previous FIRST
+                                                            _codeFocusNodes[index - 1].requestFocus();
+
+                                                            // Delay ensures focus change happens before clearing
+                                                            Future.microtask(() {
+                                                              _codeControllers[index - 1].selection = TextSelection.collapsed(offset: 1);
+                                                            });
                                                           }
                                                         }
                                                       },
+                                                      ///
                                                       inputFormatters: [
                                                         FilteringTextInputFormatter
                                                             .digitsOnly,
-                                                        LengthLimitingTextInputFormatter(
-                                                            1),
                                                       ],
                                                     ),
                                                   ),

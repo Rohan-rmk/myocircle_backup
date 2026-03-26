@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:myocircle15screens/components/components_path.dart';
 import 'package:provider/provider.dart';
@@ -270,6 +271,7 @@ class _PatientMessagesScreenState extends State<PatientMessagesScreen> {
     final landingPageData = session.landingPageData;
     final userData = session.userData;
     final familyMembers = userData?['familyMembers'];
+    final therapistProfileImage = userData?['therapistProfileImage'];
     String therapistName = userData?['therapistInfo']['firstName'] +
         ' ' +
         userData?['therapistInfo']['lastName'];
@@ -295,35 +297,43 @@ class _PatientMessagesScreenState extends State<PatientMessagesScreen> {
                 SizedBox(
                   height: 45,
                   width: 45,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      // Outer background with padding
-                      Positioned.fill(
-                        child: Padding(
-                          padding: const EdgeInsets.all(4),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage(DOCTOR_AVATAR_BG),
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                            child: Image.asset(
-                              DOCTOR_TEST,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                      ),
-                      // Top ring overlay
-                      Positioned.fill(
-                        child: Image.asset(
-                          DOCTOR_AVATAR_RING,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage(AVATAR_RING), // ring background
                           fit: BoxFit.fill,
                         ),
                       ),
-                    ],
+                      child: Padding(
+                        padding: const EdgeInsets.all(3),
+                        child: ClipOval(
+                          child: (userData?['therapistInfo']?['therapistProfileImage'] != null &&
+                              userData!['therapistInfo']['therapistProfileImage']
+                                  .toString()
+                                  .isNotEmpty)
+                              ? Image.memory(
+                            base64Decode(
+                              userData['therapistInfo']['therapistProfileImage'].contains(',')
+                                  ? userData['therapistInfo']['therapistProfileImage']
+                                  .split(',')
+                                  .last
+                                  : userData['therapistInfo']['therapistProfileImage'],
+                            ),
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          )
+                              : Image.asset(
+                            DOCTOR_TEST,
+                            fit: BoxFit.cover,
+                            width: double.infinity,
+                            height: double.infinity,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -553,9 +563,14 @@ class _PatientMessagesScreenState extends State<PatientMessagesScreen> {
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              gradient: const LinearGradient(
-                colors: [Color(0xff999999), Color(0xff999999)],
-              ),
+              // gradient: const LinearGradient(
+              //   colors: [Color(0xff999999), Color(0xff999999)],
+              // ),
+              gradient: LinearGradient(colors: [
+                Color(0xff1349D1),
+                Color(0xffF6F5F3),
+                Color(0xff1349D1),
+              ]),
             ),
             child: Padding(
               padding: const EdgeInsets.all(4),
@@ -570,7 +585,8 @@ class _PatientMessagesScreenState extends State<PatientMessagesScreen> {
                       controller: _messageController,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: const Color(0xffE6E6E6),
+                        // fillColor: const Color(0xffE6E6E6),
+                        fillColor: Colors.blue.shade100,
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: BorderSide.none,
@@ -587,7 +603,7 @@ class _PatientMessagesScreenState extends State<PatientMessagesScreen> {
                     flex: 1,
                     child: GestureDetector(
                       onTap: _sendMessage,
-                      child: Image.asset(SEND_BTN),
+                      child: Image.asset(SEND_BTN,color: Colors.white),
                     ),
                   ),
                   const SizedBox(width: 10),

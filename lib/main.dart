@@ -25,6 +25,7 @@ import 'package:myocircle15screens/services/applife_cycle_manager.dart';
 import 'package:myocircle15screens/services/notification_service.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'forgot_pin_logic/enter_email_vm.dart';
 import 'screens/onboarding/splash_screen.dart';
 
 class MyHttpOverrides extends HttpOverrides {
@@ -59,6 +60,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => SessionProvider()),
       ChangeNotifierProvider(create: (_) => FirstTimeUserProvider()),
       ChangeNotifierProvider(create: (_) => IndexProvider()),
+      ChangeNotifierProvider(create: (_) => ForgotPinProvider()),
     ],
     child: const MyApp(),
   ));

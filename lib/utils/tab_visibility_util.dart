@@ -98,20 +98,52 @@ class TabVisibilityUtil {
     return PatientTab.values.indexOf(tab);
   }
 
+  // static String getScreenNameFromTab(PatientTab tab) {
+  //   switch (tab) {
+  //     case PatientTab.home:
+  //       return "PatientHomeScreen";
+  //     case PatientTab.leaderboard:
+  //       return "PatientScoreScreen";
+  //     case PatientTab.dashboard:
+  //       return "PatientDashboardScreen";
+  //     case PatientTab.messages:
+  //       return "PatientMessagesScreen";
+  //     case PatientTab.exercise:
+  //       return "PatientExercisesScreen";
+  //     case PatientTab.report:
+  //       return "PatientReportScreen";
+  //   }
+  // }
+///
   static String getScreenNameFromTab(PatientTab tab) {
     switch (tab) {
       case PatientTab.home:
         return "PatientHomeScreen";
+
       case PatientTab.leaderboard:
         return "PatientScoreScreen";
+
       case PatientTab.dashboard:
         return "PatientDashboardScreen";
+
       case PatientTab.messages:
         return "PatientMessagesScreen";
+
       case PatientTab.exercise:
         return "PatientExercisesScreen";
+
       case PatientTab.report:
         return "PatientReportScreen";
+
+      case PatientTab.resetPin:
+        return "ResetPinScreen";
+
+      case PatientTab.changeAvatar:
+        return "ChangeAvatarScreen";
+
+      case PatientTab.therapist:
+        return "MyTherapistScreen";
     }
   }
+///
 }

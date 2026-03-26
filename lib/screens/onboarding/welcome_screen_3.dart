@@ -100,10 +100,13 @@ class _WelcomeScreen3State extends State<WelcomeScreen3> {
                             ],
                           ),
                         ),
-                        ScaleButton(onTap: (){
+                        ScaleButton(
+                            onTap: (){
                           Provider.of<FirstTimeUserProvider>(context, listen: false).setFirstTime(false);
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>BridgeScreen()));
-                        },child: Image.asset(CONTINUE_WELCOME_BTN,fit: BoxFit.contain,height: 70,)),
+
+                        },
+                            child: Image.asset(CONTINUE_WELCOME_BTN,fit: BoxFit.contain,height: 70)),
                       ],
                     ),
                   ],

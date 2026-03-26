@@ -178,9 +178,8 @@ class _NewPatientScreenState extends State<NewPatientScreen> with TickerProvider
                         Expanded(flex: 2,
                           child: Row(
                             children: [
-                              Expanded(flex: 2,child: ScaleButton(child: Image.asset(NEW_PATIENT_CONTINUE_BTN,fit: BoxFit.cover,))),
-                              Expanded(flex: 2,child: ScaleButton(child: Image.asset(PRESCRIPTION_BTN,fit: BoxFit.cover,))),
-
+                              Expanded(flex: 2,child: ScaleButton(child: Image.asset(NEW_PATIENT_CONTINUE_BTN,fit: BoxFit.cover))),
+                              Expanded(flex: 2,child: ScaleButton(child: Image.asset(PRESCRIPTION_BTN,fit: BoxFit.cover))),
                             ],
                           ),
                         ),

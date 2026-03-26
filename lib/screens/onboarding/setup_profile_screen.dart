@@ -86,10 +86,9 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
   }
 
   void updateUserProfileAvatarAndName() async {
-    int? selectedAvatar =
-        Provider.of<AvatarProvider>(context, listen: false).selectedAvatar;
-    var updateUserProfileAvatarAndNameResponse =
-        await ApiService.updateUserProfileAvatarAndName(
+
+    int? selectedAvatar = Provider.of<AvatarProvider>(context, listen: false).selectedAvatar;
+    var updateUserProfileAvatarAndNameResponse = await ApiService.updateUserProfileAvatarAndName(
             context: context,
             userToken: Provider.of<SessionProvider>(context, listen: false)
                 .userData?['user_token']!,

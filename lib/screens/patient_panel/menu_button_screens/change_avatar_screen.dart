@@ -12,8 +12,11 @@ import 'package:myocircle15screens/services/api_service.dart';
 
 import '../../../components/components_path.dart';
 import '../../../components/profile_header.dart';
+import '../../../enums/patient_tab.dart';
 import '../../../providers/first_time_user_provider.dart';
+import '../../../providers/index_provider.dart';
 import '../../onboarding/setup_profile_screen.dart';
+import '../patient_master_screen.dart';
 
 class ChangeAvatarScreen extends StatefulWidget {
   const ChangeAvatarScreen({super.key});
@@ -117,7 +120,16 @@ class _ChangeAvatarScreenState extends State<ChangeAvatarScreen> {
     }
   }
 
+  ///final session = Provider.of<SessionProvider>(context, listen: false);
+  //                       final _selectedProfileId = session.selectedProfileId;
+  //                       print("_selectedProfileId");
+  //                       print(_selectedProfileId);
+  //                       print(_selectedProfileId);
+
+
   void updateUserProfileAvatarAndName() async {
+    final session = Provider.of<SessionProvider>(context, listen: false);
+    final _selectedProfileId = session.selectedProfileId;
     int? selectedAvatar = avatarIndex;
     var updateUserProfileAvatarAndNameResponse =
         await ApiService.updateUserProfileAvatarAndName(
@@ -126,11 +138,12 @@ class _ChangeAvatarScreenState extends State<ChangeAvatarScreen> {
                 .userData?['user_token']!,
             userId: Provider.of<SessionProvider>(context, listen: false)
                 .userData?['userId']!,
-            profileId: Provider.of<SessionProvider>(context, listen: false)
-                .userData?['profileId']!,
+            profileId: session.isPatient == true? Provider.of<SessionProvider>(context, listen: false)
+                .userData!['profileId']:_selectedProfileId,
             profileName: usernameController.text,
             base64Image: avatarsData[selectedAvatar!]['avatarUrl']);
     if (updateUserProfileAvatarAndNameResponse['status'] == 200) {
+      context.read<SessionProvider>().setSelectedProfileName(usernameController.text);
       showComplete();
     }
   }
@@ -148,6 +161,7 @@ class _ChangeAvatarScreenState extends State<ChangeAvatarScreen> {
                 .userData?['profileId']!,
             imageFile: _image!);
     if (updateUserProfilePhotoAndNameResponse['status'] == 200) {
+      context.read<SessionProvider>().setSelectedProfileName(usernameController.text);
       showComplete();
     }
   }
@@ -189,8 +203,10 @@ class _ChangeAvatarScreenState extends State<ChangeAvatarScreen> {
         _didLoad = true;
         getAvatars();
         usernameController.text =
-            Provider.of<SessionProvider>(context, listen: false)
-                .landingPageData?['profileName'];
+            context.read<SessionProvider>().profileName ?? '';
+        print(usernameController.text);
+        print("********");
+        print(usernameController.text);
       });
     }
   }
@@ -214,13 +230,13 @@ class _ChangeAvatarScreenState extends State<ChangeAvatarScreen> {
     return Scaffold(
       backgroundColor: Color(0xfff6f5f3),
       resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        forceMaterialTransparency: true,
-        actions: [
-          Expanded(child: ProfileHeader()),
-        ],
-      ),
+      // appBar: AppBar(
+      //   automaticallyImplyLeading: false,
+      //   forceMaterialTransparency: true,
+      //   actions: [
+      //     Expanded(child: ProfileHeader()),
+      //   ],
+      // ),
       body: SafeArea(
         child: Center(
           child: Column(
@@ -758,6 +774,11 @@ class _ChangeAvatarScreenState extends State<ChangeAvatarScreen> {
                 flex: 2,
                 child: ScaleButton(
                     onTap: () {
+                      final session = Provider.of<SessionProvider>(context, listen: false);
+                      final _selectedProfileId = session.selectedProfileId;
+                      print("_selectedProfileId");
+                      print(_selectedProfileId);
+                      print(_selectedProfileId);
                       if (usernameController.text != "") {
                         if (uploadPhoto) {
                           if (_image != null &&
@@ -859,15 +880,7 @@ class _ChangeAvatarScreenState extends State<ChangeAvatarScreen> {
                                 )),
                               ],
                             )),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(height: 30, DOT_COLORED),
-                                Image.asset(height: 30, DOT_WHITE),
-                                Image.asset(height: 30, DOT_COLORED),
-                                Image.asset(height: 30, DOT_WHITE),
-                              ],
-                            ),
+
                           ],
                         ),
                         Padding(
@@ -875,6 +888,9 @@ class _ChangeAvatarScreenState extends State<ChangeAvatarScreen> {
                           child: ScaleButton(
                               onTap: () {
                                 landingPage();
+                                Navigator.pop(context);
+                                Provider.of<IndexProvider>(context, listen: false)
+                                    .setIndex(PatientTab.home.index);
                               },
                               child: Image.asset(
                                 EXERCISE_VIEW_OK_BTN,

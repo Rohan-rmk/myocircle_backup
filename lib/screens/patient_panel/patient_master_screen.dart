@@ -340,381 +340,277 @@ class _PatientMasterScreenState extends State<PatientMasterScreen> {
                                         return PatientExercisesScreen();
                                       case PatientTab.report:
                                         return PatientReportScreen();
+
+///
+                                      case PatientTab.resetPin:
+                                        return ResetPinScreen();
+
+                                      case PatientTab.changeAvatar:
+                                        return ChangeAvatarScreen();
+
+                                      case PatientTab.therapist:
+                                        return MyTherapistScreen();
+                                        ///
                                     }
                                   },
                                 ),
+                                ///
                                 if (showProfile)
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Card(
-                                        color: Colors.white,
-                                        surfaceTintColor: Colors.white,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.only(
-                                            bottomRight: Radius.circular(50),
-                                            bottomLeft: Radius.circular(50),
-                                          ),
-                                        ),
-                                        child: Stack(
-                                          children: [
-                                            Positioned(
-                                              right: 10,
-                                              top: 10,
-                                              child: ScaleButton(
-                                                onTap: () {
-                                                  setState(() {
-                                                    showProfile = false;
-                                                  });
-                                                },
-                                                child: Image.asset(
-                                                    EXERCISE_VIEW_CLOSE_BTN),
-                                              ),
-                                            ),
-                                            Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.all(8.0),
-                                                  child: Container(
-                                                    height: 100,
-                                                    width: 100,
-                                                    decoration: BoxDecoration(
-                                                      shape: BoxShape.circle,
-                                                      boxShadow: [
-                                                        BoxShadow(
-                                                          color: Colors.black54,
-                                                          blurRadius: 7,
-                                                          spreadRadius: 1,
-                                                          offset: Offset(-2, 4),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    child: Stack(
-                                                      alignment:
-                                                          Alignment.center,
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .all(8.0),
-                                                          child: Container(
-                                                            decoration:
-                                                                BoxDecoration(
-                                                              image:
-                                                                  DecorationImage(
-                                                                image: AssetImage(
-                                                                    AVATAR_CONTAINER_INNER),
-                                                              ),
-                                                            ),
-                                                            child: Skeletonizer(
-                                                              enabled:
-                                                                  landingPageData ==
-                                                                      null,
-                                                              child: ClipRRect(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            50),
-                                                                child: landingPageData ==
-                                                                            null ||
-                                                                        landingPageData['patientAvatarURL'] ==
-                                                                            null
-                                                                    ? AspectRatio(
-                                                                        aspectRatio:
-                                                                            2 / 2,
-                                                                        child: displayBase64Image(
-                                                                            defaultBase64),
-                                                                      )
-                                                                    : Base64ImageWidget(
-                                                                        key:
-                                                                            UniqueKey(),
-                                                                        base64String:
-                                                                            landingPageData['patientAvatarURL'],
-                                                                      ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        Image.asset(
-                                                            AVATAR_CONTAINER_OUTER),
-                                                      ],
+                                  Positioned.fill(
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          showProfile = false; // ✅ close on outside tap
+                                        });
+                                      },
+                                      child: Container(
+                                        color: Colors.black.withOpacity(0.3), // optional dim background
+                                        child: SafeArea(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () {}, // ❗ prevent closing when clicking inside
+                                                child: Card(
+                                                  color: Colors.white,
+                                                  surfaceTintColor: Colors.white,
+                                                  shape: const RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.only(
+                                                      bottomRight: Radius.circular(50),
+                                                      bottomLeft: Radius.circular(50),
                                                     ),
                                                   ),
-                                                ),
-                                                Text(
-                                                  "${landingPageData?['profileName']}",
-                                                  style: TextStyle(
-                                                    fontSize: 22,
-                                                    fontWeight: FontWeight.w400,
-                                                    fontFamily: "Alegreya_Sans",
-                                                    color: Color(0xff8E8E93),
-                                                  ),
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    Expanded(
-                                                      child: TextButton(
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            showProfile = false;
-                                                          });
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  ResetPinScreen(),
-                                                            ),
-                                                          );
-                                                        },
-                                                        child: Column(
-                                                          children: [
-                                                            SizedBox(
-                                                                width: 70,
-                                                                height: 70,
-                                                                child: Image.asset(
-                                                                    listItems[0]
-                                                                        [
-                                                                        'icon'])),
-                                                            Center(
-                                                              child: Text(
-                                                                listItems[0]
-                                                                    ['name'],
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 16,
-                                                                  fontFamily:
-                                                                      "Alegreya_Sans",
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  color: Color(
-                                                                      0xff8E8E93),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
+                                                  child: Stack(
+                                                    children: [
+                                                      /// ❌ CLOSE BUTTON
+                                                      Positioned(
+                                                        right: 10,
+                                                        top: 10,
+                                                        child: ScaleButton(
+                                                          onTap: () {
+                                                            setState(() {
+                                                              showProfile = false;
+                                                            });
+                                                          },
+                                                          child: Image.asset(EXERCISE_VIEW_CLOSE_BTN),
                                                         ),
                                                       ),
-                                                    ),
-                                                    Expanded(
-                                                      child: TextButton(
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            showProfile = false;
-                                                          });
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  ChangeAvatarScreen(),
-                                                            ),
-                                                          );
-                                                        },
-                                                        child: Column(
-                                                          children: [
-                                                            SizedBox(
-                                                                height: 70,
-                                                                width: 70,
-                                                                child: Image.asset(
-                                                                    listItems[1]
-                                                                        [
-                                                                        'icon'])),
-                                                            Center(
-                                                              child: Text(
-                                                                listItems[1]
-                                                                    ['name'],
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 16,
-                                                                  fontFamily:
-                                                                      "Alegreya_Sans",
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  color: Color(
-                                                                      0xff8E8E93),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: TextButton(
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            showProfile = false;
-                                                            Provider.of<IndexProvider>(
-                                                                    context,
-                                                                    listen:
-                                                                        false)
-                                                                .setIndex(5);
-                                                          });
-                                                        },
-                                                        child: Column(
-                                                          children: [
-                                                            SizedBox(
-                                                                width: 70,
-                                                                height: 70,
-                                                                child: Image.asset(
-                                                                    listItems[2]
-                                                                        [
-                                                                        'icon'])),
-                                                            Center(
-                                                              child: Text(
-                                                                listItems[2]
-                                                                    ['name'],
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 16,
-                                                                  fontFamily:
-                                                                      "Alegreya_Sans",
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  color: Color(
-                                                                      0xff8E8E93),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    Expanded(
-                                                      child: TextButton(
-                                                        onPressed: () {
-                                                          setState(() {
-                                                            showProfile = false;
-                                                          });
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
-                                                              builder: (context) =>
-                                                                  MyTherapistScreen(),
-                                                            ),
-                                                          );
-                                                        },
-                                                        child: Column(
-                                                          children: [
-                                                            SizedBox(
-                                                                width: 70,
-                                                                height: 70,
-                                                                child: Image.asset(
-                                                                    listItems[3]
-                                                                        [
-                                                                        'icon'])),
-                                                            Center(
-                                                              child: Text(
-                                                                listItems[3]
-                                                                    ['name'],
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 16,
-                                                                  fontFamily:
-                                                                      "Alegreya_Sans",
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  color: Color(
-                                                                      0xff8E8E93),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      child: Column(
+
+                                                      /// ✅ CONTENT
+                                                      Column(
+                                                        mainAxisSize: MainAxisSize.min,
                                                         children: [
-                                                          SizedBox(
-                                                            height: 70,
-                                                            width: 70,
-                                                            child: CustomSwitch(
-                                                                value: isSelfie,
-                                                                onChanged:
-                                                                    (value) {
-                                                                  setState(() {
-                                                                    isSelfie =
-                                                                        value;
-                                                                  });
-                                                                }),
-                                                          ),
-                                                          Text(
-                                                            listItems[4]
-                                                                ['name'],
-                                                            style: TextStyle(
-                                                              fontSize: 16,
-                                                              fontFamily:
-                                                                  "Alegreya_Sans",
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w400,
-                                                              color: Color(
-                                                                0xff8E8E93,
+                                                          /// PROFILE IMAGE
+                                                          Padding(
+                                                            padding: const EdgeInsets.all(8.0),
+                                                            child: Container(
+                                                              height: 100,
+                                                              width: 100,
+                                                              decoration: BoxDecoration(
+                                                                shape: BoxShape.circle,
+                                                                boxShadow: [
+                                                                  BoxShadow(
+                                                                    color: Colors.black54,
+                                                                    blurRadius: 7,
+                                                                    spreadRadius: 1,
+                                                                    offset: Offset(-2, 4),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                              child: Stack(
+                                                                alignment: Alignment.center,
+                                                                children: [
+                                                                  Padding(
+                                                                    padding: const EdgeInsets.all(8.0),
+                                                                    child: Container(
+                                                                      decoration: BoxDecoration(
+                                                                        image: DecorationImage(
+                                                                          image: AssetImage(
+                                                                              AVATAR_CONTAINER_INNER),
+                                                                        ),
+                                                                      ),
+                                                                      child: Skeletonizer(
+                                                                        enabled:
+                                                                        landingPageData == null,
+                                                                        child: ClipRRect(
+                                                                          borderRadius:
+                                                                          BorderRadius.circular(50),
+                                                                          child: landingPageData == null ||
+                                                                              landingPageData[
+                                                                              'patientAvatarURL'] ==
+                                                                                  null
+                                                                              ? AspectRatio(
+                                                                            aspectRatio: 2 / 2,
+                                                                            child:
+                                                                            displayBase64Image(
+                                                                                defaultBase64),
+                                                                          )
+                                                                              : Base64ImageWidget(
+                                                                            key: UniqueKey(),
+                                                                            base64String:
+                                                                            landingPageData[
+                                                                            'patientAvatarURL'],
+                                                                          ),
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Image.asset(AVATAR_CONTAINER_OUTER),
+                                                                ],
                                                               ),
                                                             ),
+                                                          ),
+
+                                                          /// NAME
+                                                          Text(
+                                                            "${landingPageData?['profileName']}",
+                                                            style: const TextStyle(
+                                                              fontSize: 22,
+                                                              fontWeight: FontWeight.w400,
+                                                              fontFamily: "Alegreya_Sans",
+                                                              color: Color(0xff8E8E93),
+                                                            ),
+                                                          ),
+
+                                                          /// ROW 1
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                            MainAxisAlignment.spaceEvenly,
+                                                            children: [
+                                                              _menuItem(
+                                                                icon: listItems[0]['icon'],
+                                                                title: listItems[0]['name'],
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    showProfile = false;
+                                                                  });
+                                                                  // Navigator.push(
+                                                                  //   context,
+                                                                  //   MaterialPageRoute(
+                                                                  //     builder: (_) => ResetPinScreen(),
+                                                                  //   ),
+                                                                  // );
+                                                                  ///
+                                                                  Provider.of<IndexProvider>(context, listen: false)
+                                                                      .setIndex(PatientTab.resetPin.index);
+                                                                  ///
+                                                                },
+                                                              ),
+                                                              _menuItem(
+                                                                icon: listItems[1]['icon'],
+                                                                title: listItems[1]['name'],
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    showProfile = false;
+                                                                  });
+                                                                  // Navigator.push(
+                                                                  //   context,
+                                                                  //   MaterialPageRoute(
+                                                                  //     builder: (_) =>
+                                                                  //         ChangeAvatarScreen(),
+                                                                  //   ),
+                                                                  // );
+                                                                  ///
+                                                                  Provider.of<IndexProvider>(context, listen: false)
+                                                                      .setIndex(PatientTab.changeAvatar.index);
+                                                                  ///
+                                                                },
+                                                              ),
+                                                              _menuItem(
+                                                                icon: listItems[2]['icon'],
+                                                                title: listItems[2]['name'],
+                                                                onTap: () {
+                                                                  setState(() {
+                                                                    showProfile = false;
+                                                                  });
+                                                                  Provider.of<IndexProvider>(context,
+                                                                      listen: false)
+                                                                      .setIndex(5);
+                                                                },
+                                                              ),
+                                                            ],
+                                                          ),
+
+                                                          /// ROW 2
+                                                          Row(
+                                                            mainAxisAlignment:
+                                                            MainAxisAlignment.spaceEvenly,
+                                                            children: [
+                                                              _menuItem(
+                                                                icon: listItems[3]['icon'],
+                                                                title: listItems[3]['name'],
+                                                                // onTap: () {
+                                                                //   setState(() {
+                                                                //     showProfile = false;
+                                                                //   });
+                                                                //   Navigator.push(
+                                                                //     context,
+                                                                //     MaterialPageRoute(
+                                                                //       builder: (_) =>
+                                                                //           MyTherapistScreen(),
+                                                                //     ),
+                                                                //   );
+                                                                // },
+                                                                ///
+                                                                  onTap: () {
+                                                                    setState(() {
+                                                                      showProfile = false;
+                                                                    });
+
+                                                                    Provider.of<IndexProvider>(context, listen: false)
+                                                                        .setIndex(PatientTab.therapist.index);
+                                                                  }
+                                                                ///
+                                                              ),
+
+                                                              /// SELFIE SWITCH
+                                                              Expanded(
+                                                                child: Column(
+                                                                  children: [
+                                                                    SizedBox(
+                                                                      height: 70,
+                                                                      width: 70,
+                                                                      child: CustomSwitch(
+                                                                        value: isSelfie,
+                                                                        onChanged: (value) {
+                                                                          setState(() {
+                                                                            isSelfie = value;
+                                                                          });
+                                                                        },
+                                                                      ),
+                                                                    ),
+                                                                    Text(
+                                                                      listItems[4]['name'],
+                                                                      style: const TextStyle(
+                                                                        fontSize: 16,
+                                                                        fontFamily: "Alegreya_Sans",
+                                                                        color: Color(0xff8E8E93),
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                              ),
+
+                                                              _menuItem(
+                                                                icon: listItems[5]['icon'],
+                                                                title: listItems[5]['name'],
+                                                                onTap: performLogout,
+                                                              ),
+                                                            ],
                                                           ),
                                                         ],
                                                       ),
-                                                    ),
-                                                    Expanded(
-                                                      child: TextButton(
-                                                        onPressed:
-                                                            performLogout,
-                                                        child: Column(
-                                                          children: [
-                                                            SizedBox(
-                                                                height: 70,
-                                                                width: 70,
-                                                                child: Image.asset(
-                                                                    listItems[5]
-                                                                        [
-                                                                        'icon'])),
-                                                            Center(
-                                                              child: Text(
-                                                                listItems[5]
-                                                                    ['name'],
-                                                                style:
-                                                                    TextStyle(
-                                                                  fontSize: 16,
-                                                                  fontFamily:
-                                                                      "Alegreya_Sans",
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w400,
-                                                                  color: Color(
-                                                                      0xff8E8E93),
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
-                                              ],
-                                            ),
-                                          ],
+                                              ),
+                                            ],
+                                          ),
                                         ),
                                       ),
-                                    ],
+                                    ),
                                   ),
+                                ///
                               ],
                             );
                         }
@@ -743,4 +639,29 @@ class _PatientMasterScreenState extends State<PatientMasterScreen> {
       ),
     );
   }
+}
+Widget _menuItem({
+  required String icon,
+  required String title,
+  required VoidCallback onTap,
+}) {
+  return Expanded(
+    child: TextButton(
+      onPressed: onTap,
+      child: Column(
+        children: [
+          SizedBox(height: 70, width: 70, child: Image.asset(icon)),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 16,
+              fontFamily: "Alegreya_Sans",
+              color: Color(0xff8E8E93),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

@@ -9,9 +9,11 @@ import 'package:myocircle15screens/screens/patient_panel/patient_survey_screen.d
 import 'package:provider/provider.dart';
 import 'package:scale_button/scale_button.dart';
 import 'package:myocircle15screens/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../providers/first_time_user_provider.dart';
 import '../../providers/session_provider.dart';
+import 'forgot_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -44,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (pin.isEmpty) return null;
     return int.tryParse(pin);
   }
-
+  List<String> _prevPinValues = List.filled(4, '');
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -135,6 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   borderRadius: BorderRadius.circular(5),
                                 ),
                                 child: TextField(
+                                  keyboardType: TextInputType.emailAddress,
                                   cursorColor: Color(0xff0D4081),
                                   focusNode: _emailFocus,
                                   onTapOutside: (event) {
@@ -194,56 +197,84 @@ class _LoginScreenState extends State<LoginScreen> {
                                         focusNode: FocusNode(),
                                         onKeyEvent: (event) {
                                           if (event is KeyDownEvent &&
-                                              event.logicalKey ==
-                                                  LogicalKeyboardKey
-                                                      .backspace &&
-                                              _pinControllers[index]
-                                                  .text
-                                                  .isEmpty &&
-                                              index > 0) {
-                                            _pinFocusNodes[index - 1]
-                                                .requestFocus();
+                                              event.logicalKey == LogicalKeyboardKey.backspace && _pinControllers[index].text.isEmpty && index > 0) {
+                                            _pinFocusNodes[index - 1].requestFocus();
                                           }
                                         },
                                         child: TextField(
                                           cursorColor: Color(0xff0D4081),
                                           controller: _pinControllers[index],
                                           focusNode: _pinFocusNodes[index],
-                                          onTapOutside: (event) {
-                                            setState(() {
-                                              _pinFocusNodes[index].unfocus();
-                                            });
-                                          },
                                           textAlign: TextAlign.center,
                                           keyboardType: TextInputType.number,
                                           obscureText: true,
-                                          maxLength: 1,
+
                                           style: const TextStyle(
                                             fontSize: 22,
                                             fontFamily: "Alegreya_Sans",
                                           ),
+
                                           decoration: const InputDecoration(
                                             counterText: "",
                                             border: InputBorder.none,
                                           ),
-                                          onTap: () {
-                                            _pinControllers[index].clear();
+
+                                          onTapOutside: (event) {
+                                            _pinFocusNodes[index].unfocus();
                                           },
+
+                                          // 🔥 MAIN LOGIC
                                           onChanged: (value) {
-                                            if (value.isNotEmpty && index < 3) {
-                                              FocusScope.of(context)
-                                                  .requestFocus(
-                                                _pinFocusNodes[index + 1],
-                                              );
-                                            } else if (value.isNotEmpty) {
-                                              FocusScope.of(context).unfocus();
+                                            final prev = _prevPinValues[index];
+
+                                            // 🔥 PASTE CASE
+                                            if (value.length > 1) {
+                                              final pasted = value.replaceAll(RegExp(r'[^0-9]'), '').split('');
+
+                                              for (int i = 0; i < _pinControllers.length; i++) {
+                                                _pinControllers[i].text =
+                                                i < pasted.length ? pasted[i] : '';
+                                                _prevPinValues[i] = _pinControllers[i].text;
+                                              }
+
+                                              int lastIndex = pasted.length >= 4 ? 3 : pasted.length;
+                                              _pinFocusNodes[lastIndex].requestFocus();
+                                              return;
+                                            }
+
+                                            // ✅ NORMAL INPUT
+                                            if (value.isNotEmpty) {
+                                              _prevPinValues[index] = value;
+
+                                              if (index < 3) {
+                                                _pinFocusNodes[index + 1].requestFocus();
+                                              } else {
+                                                _pinFocusNodes[index].unfocus();
+                                              }
+                                              return;
+                                            }
+
+                                            // 🔥 CONTINUOUS BACKSPACE
+                                            if (value.isEmpty && prev.isNotEmpty) {
+                                              _prevPinValues[index] = '';
+
+                                              if (index > 0) {
+                                                _pinFocusNodes[index - 1].requestFocus();
+
+                                                // place cursor at end
+                                                Future.microtask(() {
+                                                  _pinControllers[index - 1].selection =
+                                                      TextSelection.collapsed(offset: 1);
+                                                });
+                                              }
                                             }
                                           },
+
                                           inputFormatters: [
-                                            FilteringTextInputFormatter
-                                                .digitsOnly,
-                                            LengthLimitingTextInputFormatter(1),
+                                            FilteringTextInputFormatter.digitsOnly,
                                           ],
+
+                                          autofillHints: const [AutofillHints.oneTimeCode],
                                         ),
                                       ),
                                     ),
@@ -278,12 +309,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 context,
                                                 listen: false);
 
-                                        if (loginResponse['data']
-                                                ['isPatient'] ==
-                                            "Yes") {
-                                          await session.setSelectedProfileId(
-                                              loginResponse['data']
-                                                  ['profileId']);
+                                        if (loginResponse['data']['isPatient'] == "Yes") {
+                                          print("*****##");
+                                          print(loginResponse['data']);
+                                          print("*****##");
+                                          String profileName = "";
+                                          profileName = loginResponse['data']['profileName'];
+                                          await session.setSelectedProfileId(loginResponse['data']['profileId']);
+                                          await session.setSelectedProfileName(profileName);
+
                                         } else if (loginResponse['data']
                                                 ['isPatient'] ==
                                             "No") {
@@ -449,16 +483,26 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                       open
                           ? const SizedBox()
-                          : const Text(
-                              'Forgot PIN',
-                              style: TextStyle(
-                                fontFamily: "Alegreya_Sans",
-                                fontSize: 20,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF017EB9),
-                              ),
-                              textAlign: TextAlign.center,
+                          : GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ForgotPasswordScreen(),
                             ),
+                          );
+                        },
+                            child: const Text(
+                                'Forgot PIN',
+                                style: TextStyle(
+                                  fontFamily: "Alegreya_Sans",
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w500,
+                                  color: Color(0xFF017EB9),
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                          ),
                     ],
                   ),
                 ),

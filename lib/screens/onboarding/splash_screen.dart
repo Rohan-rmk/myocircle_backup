@@ -31,7 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
           child: Column(mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Image.asset(height: 133,width: 199,LOGO_SPLASH,fit: BoxFit.cover,),
-              SizedBox(height: 10,),
+              SizedBox(height: 10),
               RichText(textAlign: TextAlign.center,
                 text: TextSpan(
                   style: TextStyle(letterSpacing: 3,fontWeight: FontWeight.w700,

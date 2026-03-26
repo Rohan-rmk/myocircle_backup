@@ -14,6 +14,8 @@ import '../../providers/index_provider.dart';
 import '../../providers/session_provider.dart';
 import '../../services/media_kit_stream_service.dart';
 import 'select_profile_screen.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 
 class PatientHomeScreen extends StatefulWidget {
   const PatientHomeScreen({
@@ -468,7 +470,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(
-                  height: 30,
+                  height: 32,
                   child: Align(
                     alignment: Alignment.centerRight,
                     child: ScaleButton(
@@ -481,15 +483,15 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                 ),
                 Image.asset(
                   EXERCISE_VIEW_AVATAR,
-                  height: 120,
-                  width: 120,
+                  height: 115,
+                  width: 115,
                 ),
                 Center(
                   child: Text(
                     "$message",
                     style: TextStyle(
                       fontFamily: "Alegreya_Sans",
-                      fontSize: 15,
+                      fontSize: 16,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -503,7 +505,10 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
   }
 
   bool showRewards = false;
-
+  ImageProvider getBase64Image(String base64String) {
+    Uint8List bytes = base64Decode(base64String);
+    return MemoryImage(bytes);
+  }
   @override
   Widget build(BuildContext context) {
     final session = Provider.of<SessionProvider>(context, listen: false);
@@ -517,6 +522,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
     final therapistName = userData?['therapistInfo']['firstName'] +
         ' ' +
         userData?['therapistInfo']['lastName'];
+    final therapistProfileImage = userData?['therapistInfo']['therapistProfileImage'];
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     return Padding(
@@ -559,24 +565,38 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
+
+                            /// Avatar background
                             Positioned.fill(
                               child: Padding(
-                                padding: const EdgeInsets.all(4),
+                                padding: const EdgeInsets.all(1),
                                 child: Container(
                                   decoration: BoxDecoration(
                                     image: DecorationImage(
                                       image: AssetImage(DOCTOR_AVATAR_BG),
-                                      fit: BoxFit.fill,
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
-                                  child: Image.asset(
-                                    DOCTOR_TEST,
-                                    fit: BoxFit.contain,
+
+                                  /// Clip image inside circle
+                                  child: ClipOval(
+                                    child: userData?['therapistInfo']?['therapistProfileImage'] != null &&
+                                        userData!['therapistInfo']['therapistProfileImage']
+                                            .toString()
+                                            .isNotEmpty
+                                        ? Image.memory(
+                                      base64Decode(
+                                        userData['therapistInfo']['therapistProfileImage'],
+                                      ),
+                                      fit: BoxFit.cover,   // important
+                                    )
+                                        : Icon(Icons.person,color: Colors.white)
                                   ),
                                 ),
                               ),
                             ),
-                            // Top ring overlay
+
+                            /// Ring overlay
                             Positioned.fill(
                               child: Image.asset(
                                 DOCTOR_AVATAR_RING,
@@ -586,17 +606,20 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                           ],
                         ),
                       ),
+
                       const SizedBox(width: 12),
+
                       Text(
                         "Your therapist: $therapistName",
-                        style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: "Alegreya_Sans"),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: "Alegreya_Sans",
+                        ),
                       ),
                     ],
-                  ),
+                  )
                 )
               ],
             ),
@@ -619,30 +642,6 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                     final family = userData?['familyMembers'] ?? [];
                     print("familyMembers: $familyMembers");
                     final isParentPatient = familyMembers.length > 1;
-
-                    // if (!isParentPatient) {
-                    //   print("familyMembers[0]['userProfileName']");
-                    //   print(familyMembers[0]['userProfileName']);
-                    //   print(familyMembers[0]['userProfileName']);
-                    //   return (familyMembers.isNotEmpty)
-                    //       ? Text(
-                    //           "${familyMembers[0]['patientFirstName']}",
-                    //           style: TextStyle(
-                    //             fontSize: 24,
-                    //             fontFamily: "Alegreya_Sans",
-                    //             color: Color(0xff8E8E93),
-                    //           ),
-                    //         )
-                    //       : Text(
-                    //           "${userData?['userProfileName']}",
-                    //           style: TextStyle(
-                    //             fontSize: 24,
-                    //             fontFamily: "Alegreya_Sans",
-                    //             color: Color(0xff8E8E93),
-                    //           ),
-                    //         );
-                    // }
-                    // final List familyMembers = userData?['familyMembers'] ?? [];
 
 // ✅ CASE 1: No family members at all
                     if (familyMembers.isEmpty) {
@@ -701,7 +700,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                       ),
                       child: SizedBox(
                         width: 200,
-                        height: 100,
+                        height: 52,
                         child: CustomDropdown<int>(
                           value: safeValue,
                           items: userData?['familyMembers']
@@ -719,6 +718,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                             final age = member?['age'];
 
                             return Container(
+                              height: 48,
                               decoration: BoxDecoration(
                                 color: selected
                                     ? const Color(0xAACFFAFE)
@@ -726,7 +726,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 6),
+                                  horizontal: 10, vertical: 0),
                               child: Row(
                                 children: [
                                   Container(
@@ -777,7 +777,8 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                             final name =
                                 member?['userProfileName'] ?? "Unknown";
 
-                            return Center(
+                            return Align(
+                              alignment: Alignment.centerLeft,
                               child: Text(
                                 name,
                                 style: const TextStyle(
@@ -801,7 +802,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                             ),
                           ],
                           buttonHeight: 52,
-                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
 
                           // Beautiful caret
                           showCaret: true,
@@ -985,7 +986,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                                                       flex: 1,
                                                       child: Center(
                                                         child: Text(
-                                                          "Myopoints",
+                                                          "MyoPoints",
                                                           style: TextStyle(
                                                               fontFamily:
                                                                   "Alegreya_Sans",
@@ -1082,8 +1083,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                                                         child: Text(
                                                           "Progress",
                                                           style: TextStyle(
-                                                              fontFamily:
-                                                                  "Alegreya_Sans",
+                                                              fontFamily: "Alegreya_Sans",
                                                               fontSize: 16),
                                                         ),
                                                       ),
@@ -1365,29 +1365,6 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                                             }
                                           }
                                         },
-                                        // function: () {
-                                        //   if (isLocked) {
-                                        //     print(gemMotivationalMsgs);
-                                        //     showCompleteFirst(
-                                        //         gemMotivationalMsgs[id - 1]);
-                                        //   } else {
-                                        //     isAdult
-                                        //         ? showGemsAbility(context,
-                                        //             unlockedGemsImages[id - 1])
-                                        //         : Navigator.push(
-                                        //             context,
-                                        //             MaterialPageRoute(
-                                        //               builder: (context) =>
-                                        //                   PatientAvatarPreviewScreen(
-                                        //                 key: UniqueKey(),
-                                        //                 index: id - 1,
-                                        //                 refVideos:
-                                        //                     unlockedGemsVideos,
-                                        //               ),
-                                        //             ),
-                                        //           );
-                                        //   }
-                                        // },
                                         size: height / 15,
                                         id: id,
                                         lockDelay: 1,
