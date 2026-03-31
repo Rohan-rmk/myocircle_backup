@@ -252,9 +252,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                           TextAlign.center,
                                                       obscureText: true,
                                                       keyboardType: TextInputType.number,
+                                                      obscuringCharacter: "●",
 
                                                       style: const TextStyle(
-                                                        fontSize: 20,
+                                                        fontSize: 19,
                                                       ), // Slightly reduced font size
                                                       decoration:
                                                           const InputDecoration(

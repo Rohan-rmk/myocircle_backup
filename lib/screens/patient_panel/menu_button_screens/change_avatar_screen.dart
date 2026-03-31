@@ -246,7 +246,7 @@ class _ChangeAvatarScreenState extends State<ChangeAvatarScreen> {
                 child: Column(
                   children: [
                     Text(
-                      "Setup Profile",
+                      "Set profile name",
                       style:
                           TextStyle(fontSize: 22, fontFamily: "Alegreya_Sans"),
                     ),

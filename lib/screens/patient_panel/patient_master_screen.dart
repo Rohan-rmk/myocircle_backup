@@ -298,6 +298,7 @@ class _PatientMasterScreenState extends State<PatientMasterScreen> {
         },
         child: SafeArea(
           child: Scaffold(
+            resizeToAvoidBottomInset: false,
             backgroundColor: Color(0xffF6F5F3),
             body: SafeArea(
               child: Column(

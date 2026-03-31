@@ -229,8 +229,9 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                                       keyboardType: TextInputType.number,
                                       maxLength: 1,
                                       obscureText: true,
+                                      obscuringCharacter: "●",
                                       style: const TextStyle(
-                                        fontSize: 24,
+                                        fontSize: 19,
                                         fontWeight: FontWeight.bold,
                                       ),
                                       decoration: const InputDecoration(
@@ -355,9 +356,10 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                                       textAlign: TextAlign.center,
                                       keyboardType: TextInputType.number,
                                       obscureText: true,
+                                      obscuringCharacter: "●",
 
                                       style: const TextStyle(
-                                        fontSize: 24,
+                                        fontSize: 19,
                                         fontWeight: FontWeight.bold,
                                       ),
 

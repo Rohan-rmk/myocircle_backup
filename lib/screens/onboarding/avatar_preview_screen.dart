@@ -545,7 +545,8 @@ class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
         PageView.builder(
           scrollDirection: Axis.vertical,
           controller: _pageController,
-          physics: const BouncingScrollPhysics(),
+          physics: const PageScrollPhysics(),
+          pageSnapping: true,
           onPageChanged: (vIndex) {
             if (_isDisposed) return;
 
@@ -563,7 +564,8 @@ class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
           itemBuilder: (context, vIndex) {
             return PageView.builder(
               controller: _getHorizontalController(vIndex),
-              physics: const BouncingScrollPhysics(),
+              physics: const PageScrollPhysics(),
+              pageSnapping: true,
               onPageChanged: (hIndex) {
                 if (_isDisposed) return;
 
@@ -582,6 +584,7 @@ class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
                     child: mkv.Video(
                       controller: controller,
                       fit: BoxFit.cover,
+                      controls: (state) => SizedBox(),
                     ),
                   );
                 } else {

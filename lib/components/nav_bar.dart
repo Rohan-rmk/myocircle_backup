@@ -25,7 +25,7 @@ class CustomNavBar extends StatelessWidget {
                 builder: (context,constraints) {
                   return Container(width: constraints.maxWidth,child: Padding(
                     padding: EdgeInsets.only(right: constraints.maxWidth-constraints.maxWidth*0.85),
-                    child: Image.asset(NAV_DASHBOARD,fit: BoxFit.contain,),
+                    child: Image.asset(NAV_DASHBOARD,fit: BoxFit.contain),
                   ));
                 }
             ),
@@ -35,7 +35,7 @@ class CustomNavBar extends StatelessWidget {
                 builder: (context,constraints) {
                   return Container(width: constraints.maxWidth,child: Padding(
                     padding: EdgeInsets.only(right: constraints.maxWidth-constraints.maxWidth*0.85),
-                    child: Image.asset(NAV_PATIENTS,fit: BoxFit.contain,),
+                    child: Image.asset(NAV_PATIENTS,fit: BoxFit.contain),
                   ));
                 }
             ),
@@ -43,7 +43,7 @@ class CustomNavBar extends StatelessWidget {
           BottomNavigationBarItem(label: 'videos',
             icon:  LayoutBuilder(
                 builder: (context,constraints) {
-                  return Container(width: constraints.maxWidth,child: Image.asset(NAV_VIDEOS,fit: BoxFit.contain,));
+                  return Container(width: constraints.maxWidth,child: Image.asset(NAV_VIDEOS,fit: BoxFit.contain));
                 }
             ),
           ),
@@ -52,7 +52,7 @@ class CustomNavBar extends StatelessWidget {
                 builder: (context,constraints) {
                   return Container(width: constraints.maxWidth,child: Padding(
                     padding: EdgeInsets.only(left: constraints.maxWidth-constraints.maxWidth*0.85),
-                    child: Image.asset(NAV_REVIEW,fit: BoxFit.contain,),
+                    child: Image.asset(NAV_REVIEW,fit: BoxFit.contain),
                   ));
                 }
             ),

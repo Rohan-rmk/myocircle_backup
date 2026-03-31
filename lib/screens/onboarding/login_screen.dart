@@ -208,9 +208,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                           textAlign: TextAlign.center,
                                           keyboardType: TextInputType.number,
                                           obscureText: true,
+                                          obscuringCharacter: "●",
 
                                           style: const TextStyle(
-                                            fontSize: 22,
+                                            fontSize: 19,
                                             fontFamily: "Alegreya_Sans",
                                           ),
 
