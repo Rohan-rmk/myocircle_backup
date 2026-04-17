@@ -1,6 +1,7 @@
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../components/onboarding_header.dart';
 import '../../forgot_pin_logic/enter_email_vm.dart';
 import 'package:provider/provider.dart';
@@ -83,8 +84,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   style: TextStyle(
                     fontFamily: "Alegreya_Sans",
                     fontSize: 36,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFF8E8E93),
                   ),
                 ),
                 SizedBox(height: 45),
@@ -135,16 +136,42 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ),
                           const SizedBox(height: 20),
 
-                          TextField(
-                            controller: emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintText: "Enter Email",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                          // TextField(
+                          //   controller: emailController,
+                          //   keyboardType: TextInputType.emailAddress,
+                          //   decoration: InputDecoration(
+                          //     filled: true,
+                          //     fillColor: Colors.white,
+                          //     hintText: "Enter Email",
+                          //     border: OutlineInputBorder(
+                          //       borderRadius: BorderRadius.circular(10),
+                          //     ),
+                          //   ),
+                          // ),
+                          Container(
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: Color(0xffF5F5F5),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: TextField(
+                              keyboardType: TextInputType.emailAddress,
+                              cursorColor: Color(0xff0D4081),
+                              controller: emailController,
+                              decoration: const InputDecoration(
+                                hintText: "Enter Email",
+                                hintStyle: TextStyle(
+                                    fontFamily: "Alegreya_Sans",
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xff8E8E93)),
+                                border: InputBorder.none,
+                                contentPadding:
+                                EdgeInsets.symmetric(horizontal: 10),
                               ),
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: "Alegreya_Sans"),
+                              textAlign: TextAlign.start,
                             ),
                           ),
                         ],
@@ -163,19 +190,47 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                           ),
                           const SizedBox(height: 20),
 
-                          TextField(
-                            controller: otpController,
-                            keyboardType: TextInputType.phone,
-                            maxLength: 4,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              hintText: "Enter OTP",
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
+                          Container(
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: Color(0xffF5F5F5),
+                              borderRadius: BorderRadius.circular(5),
+                            ),
+                            child: TextField(
+                              keyboardType: TextInputType.emailAddress,
+                              cursorColor: Color(0xff0D4081),
+                              controller: otpController,
+                              inputFormatters: [LengthLimitingTextInputFormatter(4)],
+                              decoration: const InputDecoration(
+                                hintText: "Enter OTP",
+                                hintStyle: TextStyle(
+                                    fontFamily: "Alegreya_Sans",
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xff8E8E93)),
+                                border: InputBorder.none,
+                                contentPadding:
+                                EdgeInsets.symmetric(horizontal: 10),
                               ),
+                              style: const TextStyle(
+                                  color: Colors.black,
+                                  fontFamily: "Alegreya_Sans"),
+                              textAlign: TextAlign.start,
                             ),
                           ),
+
+                          // TextField(
+                          //   controller: otpController,
+                          //   keyboardType: TextInputType.phone,
+                          //   maxLength: 4,
+                          //   decoration: InputDecoration(
+                          //     filled: true,
+                          //     fillColor: Colors.white,
+                          //     hintText: "Enter OTP",
+                          //     border: OutlineInputBorder(
+                          //       borderRadius: BorderRadius.circular(10),
+                          //     ),
+                          //   ),
+                          // ),
                         ],
 
                         /// STEP 3
@@ -332,7 +387,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
                       }
                     },
-                    child: Image.asset("assets/forgot_pin/send-OTP-img.png"),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 15.0),
+                      child: Image.asset("assets/forgot_pin/send-OTP-img.png"),
+                    ),
                   ),
 
                 if (step == 2)
@@ -372,7 +430,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
                       }
                     },
-                    child: Image.asset("assets/forgot_pin/verify-OTP.png"),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 15.0),
+                      child: Image.asset("assets/forgot_pin/verify-OTP.png"),
+                    ),
                   ),
 
                 if (step == 3)

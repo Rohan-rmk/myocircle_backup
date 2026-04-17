@@ -242,6 +242,7 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                                 cursorColor: Color(0xff0D4081),
                                 controller: usernameController,
                                 focusNode: usernameFocus,
+                                cursorHeight: MediaQuery.of(context).size.height * 0.03,
                                 onTap: () {
                                   if (!isFirstEntry)
                                     setState(() {
@@ -262,6 +263,8 @@ class _SetupProfileScreenState extends State<SetupProfileScreen> {
                                         fontFamily: "Alegreya_Sans"),
                                 textAlign: TextAlign.center,
                                 decoration: InputDecoration(
+                                  hintText: "Enter profile name",
+                                  hintStyle: TextStyle(color: Colors.grey,fontSize: MediaQuery.of(context).size.width * 0.05),
                                   border: InputBorder.none,
                                 ),
                               ),

@@ -285,8 +285,8 @@ class ApiService {
       loadLoader: true,
       context: context,
       endpoint: 'login',
-      // body: {'pin': pin, 'uniqueId': uniqueId,'fcmtoken':fcmToken},
-      body: {'pin': pin, 'uniqueId': uniqueId},
+      body: {'pin': pin, 'uniqueId': uniqueId,'fcmtoken':fcmToken},
+      // body: {'pin': pin, 'uniqueId': uniqueId},
     );
   }
 

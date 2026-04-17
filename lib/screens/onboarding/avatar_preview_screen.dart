@@ -319,15 +319,684 @@
 ///
 
 
+///
+// import 'package:flutter/material.dart';
+// import 'package:media_kit/media_kit.dart';
+// import 'package:media_kit_video/media_kit_video.dart' as mkv;
+// import 'package:provider/provider.dart';
+// import 'package:scale_button/scale_button.dart';
+//
+// import 'package:myocircle15screens/services/applife_cycle_manager.dart';
+//
+// import '../../components/components_path.dart';
+// import '../../providers/avatar_provider.dart';
+//
+// class AvatarPreviewScreen extends StatefulWidget {
+//   final int index;
+//   final List<dynamic> refVideos;
+//
+//   const AvatarPreviewScreen({
+//     super.key,
+//     required this.index,
+//     required this.refVideos,
+//   });
+//
+//   @override
+//   State<AvatarPreviewScreen> createState() =>
+//       _AvatarPreviewScreenState();
+// }
+//
+// class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
+//   late PageController _pageController;
+//   final Map<int, PageController> _horizontalControllers = {};
+//   PageController _getHorizontalController(int vIndex) {
+//     if (!_horizontalControllers.containsKey(vIndex)) {
+//       _horizontalControllers[vIndex] = PageController();
+//     }
+//     return _horizontalControllers[vIndex]!;
+//   }
+//
+//   int _verticalIndex = 0;
+//   int _horizontalIndex = 0;
+//
+//   final Map<String, Player> _players = {};
+//   final Map<String, mkv.VideoController> _controllers = {};
+//   final Map<String, bool> _isPlaying = {};
+//
+//   int activityCounts = 0;
+//   bool _isDisposed = false;
+//   bool isDisposing = false;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//
+//     MediaKit.ensureInitialized();
+//
+//     ActivityMonitor.start();
+//     activityCounts = ActivityMonitor.count;
+//
+//     _verticalIndex = widget.index;
+//     _pageController = PageController(initialPage: _verticalIndex);
+//
+//     _loadOnlyCurrentVideo(_verticalIndex, 0);
+//   }
+//
+//   // ================= PLAYER =================
+//
+//   Future<void> _loadController(int vIndex, int hIndex) async {
+//     final key = '$vIndex-$hIndex';
+//
+//     if (_players.containsKey(key)) return;
+//
+//     final id = widget.refVideos[vIndex][hIndex];
+//
+//     final url =
+//         "https://api.myocircle.com/api/api/auth/stream?videoId=$id&type=skillVideos&playName=master.m3u8";
+//
+//     final player = Player();
+//     final controller = mkv.VideoController(player);
+//
+//     player.setPlaylistMode(PlaylistMode.none);
+//
+//     /// 🔥 IMPORTANT SETTINGS
+//     player.setVolume(100);
+//
+//     /// ❌ No autoplay initially
+//     player.open(Media(url), play: false);
+//
+//     bool initialized = false;
+//
+//     player.stream.duration.listen((duration) async {
+//       if (duration > Duration.zero && !initialized) {
+//         initialized = true;
+//
+//         /// ✅ Force start from 0
+//         await player.pause();
+//         await player.seek(Duration.zero);
+//
+//         /// 🔥 EXTRA BUFFER TIME (important fix)
+//         await Future.delayed(const Duration(milliseconds: 300));
+//
+//         /// ✅ ONLY PLAY CURRENT VIDEO
+//         final currentKey = '$_verticalIndex-$_horizontalIndex';
+//
+//         if (key == currentKey) {
+//           await player.play();
+//           _isPlaying[key] = true;
+//         } else {
+//           await player.pause(); // 🔥 IMPORTANT
+//           _isPlaying[key] = false;
+//         }
+//
+//         _isPlaying[key] = true;
+//
+//         if (!_isDisposed && mounted) {
+//           setState(() {});
+//         }
+//       }
+//     });
+//
+//
+//
+//     _players[key] = player;
+//     _controllers[key] = controller;
+//   }
+//
+//   Future<void> _loadOnlyCurrentVideo(int vIndex, int hIndex) async {
+//     if (_isDisposed) return;
+//
+//     /// ✅ Load current video
+//     await _loadController(vIndex, hIndex);
+//
+//     /// ✅ Preload NEXT video (important for smoothness)
+//     if (hIndex + 1 < widget.refVideos[vIndex].length) {
+//       await _loadController(vIndex, hIndex + 1);
+//     }
+//
+//     /// (optional) preload previous for back scroll smooth
+//     if (hIndex - 1 >= 0) {
+//       await _loadController(vIndex, hIndex - 1);
+//     }
+//
+//     _playOnlyCurrentVideo(vIndex, hIndex);
+//
+//     /// ✅ Dispose others (keep only 3 max)
+//     _disposeFarControllers(vIndex, hIndex);
+//
+//     if (!_isDisposed && mounted) setState(() {});
+//   }
+//
+//   void _playOnlyCurrentVideo(int vIndex, int hIndex) {
+//     final currentKey = '$vIndex-$hIndex';
+//
+//     _players.forEach((key, player) async {
+//       if (key == currentKey) {
+//         await player.play();
+//         _isPlaying[key] = true;
+//       } else {
+//         await player.pause();
+//         _isPlaying[key] = false;
+//       }
+//     });
+//   }
+//
+//   void _disposeFarControllers(int vIndex, int hIndex) {
+//     if (isDisposing) return;
+//
+//     setState(() => isDisposing = true);
+//
+//     final keepKeys = [
+//       '$vIndex-$hIndex',
+//       '$vIndex-${hIndex + 1}',
+//       '$vIndex-${hIndex - 1}',
+//     ];
+//
+//     final keysToRemove =
+//     _players.keys.where((key) => !keepKeys.contains(key)).toList();
+//
+//     for (final key in keysToRemove) {
+//       try {
+//         _players[key]?.dispose();
+//       } catch (_) {}
+//
+//       _players.remove(key);
+//       _controllers.remove(key);
+//       _isPlaying.remove(key);
+//     }
+//
+//     setState(() => isDisposing = false);
+//   }
+//
+//   @override
+//   void dispose() {
+//     _isDisposed = true;
+//
+//     for (final player in _players.values) {
+//       try {
+//         player.dispose();
+//       } catch (_) {}
+//     }
+//
+//     _players.clear();
+//     _controllers.clear();
+//
+//     _pageController.dispose();
+//     for (final controller in _horizontalControllers.values) {
+//       controller.dispose();
+//     }
+//     _horizontalControllers.clear();
+//
+//     ActivityMonitor.setCount(activityCounts - 1);
+//
+//     super.dispose();
+//   }
+//
+//   // ================= UI =================
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenWidth = MediaQuery.of(context).size.width;
+//
+//     return Stack(
+//       alignment: Alignment.center,
+//       children: [
+//         /// 🔥 VERTICAL SCROLL
+//         PageView.builder(
+//           scrollDirection: Axis.vertical,
+//           controller: _pageController,
+//           physics: const PageScrollPhysics(),
+//           pageSnapping: true,
+//           onPageChanged: (vIndex) {
+//             if (_isDisposed) return;
+//
+//             setState(() {
+//               _verticalIndex = vIndex;
+//               _horizontalIndex = 0;
+//             });
+//
+//             _getHorizontalController(vIndex).jumpToPage(0);
+//
+//             /// 🔥 Load only needed videos
+//             _loadOnlyCurrentVideo(vIndex, 0);
+//           },
+//           itemCount: widget.refVideos.length,
+//           itemBuilder: (context, vIndex) {
+//             return PageView.builder(
+//               controller: _getHorizontalController(vIndex),
+//               physics: const PageScrollPhysics(),
+//               pageSnapping: true,
+//               onPageChanged: (hIndex) {
+//                 if (_isDisposed) return;
+//
+//                 setState(() => _horizontalIndex = hIndex);
+//
+//                 /// 🔥 Load smart
+//                 _loadOnlyCurrentVideo(vIndex, hIndex);
+//               },
+//               itemCount: widget.refVideos[vIndex].length,
+//               itemBuilder: (context, hIndex) {
+//                 final key = '$vIndex-$hIndex';
+//                 final controller = _controllers[key];
+//
+//                 if (controller != null) {
+//                   return SizedBox.expand(
+//                     child: mkv.Video(
+//                       controller: controller,
+//                       fit: BoxFit.cover,
+//                       controls: (state) => SizedBox(),
+//                     ),
+//                   );
+//                 } else {
+//                   return const Center(
+//                     child: CircularProgressIndicator(color: Colors.white),
+//                   );
+//                 }
+//               },
+//             );
+//           },
+//         ),
+//
+//         /// 🔥 VERTICAL DOTS (CLICKABLE)
+//         Positioned(
+//           right: 10,
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: List.generate(
+//               widget.refVideos.length,
+//                   (index) => GestureDetector(
+//                 onTap: () {
+//                   _pageController.animateToPage(
+//                     index,
+//                     duration: const Duration(milliseconds: 300),
+//                     curve: Curves.easeInOut,
+//                   );
+//                 },
+//                 child: Padding(
+//                   padding: const EdgeInsets.symmetric(vertical: 4),
+//                   child: Image.asset(
+//                     _verticalIndex == index ? DOT_COLORED : DOT_WHITE,
+//                     height: 30,
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//
+//         /// 🔥 HORIZONTAL DOTS (CLICKABLE)
+//         Positioned(
+//           bottom: 120,
+//           child: Row(
+//             children: List.generate(
+//               widget.refVideos[_verticalIndex].length,
+//                   (index) => GestureDetector(
+//                 onTap: () {
+//                   _getHorizontalController(_verticalIndex).animateToPage(
+//                     index,
+//                     duration: const Duration(milliseconds: 300),
+//                     curve: Curves.easeInOut,
+//                   );
+//                 },
+//                 child: Padding(
+//                   padding: const EdgeInsets.symmetric(horizontal: 4),
+//                   child: Image.asset(
+//                     _horizontalIndex == index ? DOT_COLORED : DOT_WHITE,
+//                     height: 30,
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//
+//         /// 🔥 SELECT BUTTON
+//         Positioned(
+//           bottom: 0,
+//           child: Padding(
+//             padding: EdgeInsets.only(left: screenWidth / 17),
+//             child: SizedBox(
+//               height: 120,
+//               child: ScaleButton(
+//                 onTap: () {
+//                   if (_isDisposed) return;
+//
+//                   Provider.of<AvatarProvider>(context, listen: false)
+//                       .setAvatar(_verticalIndex);
+//
+//                   Navigator.pop(context);
+//                 },
+//                 child: Image.asset(SELECT_BTN, fit: BoxFit.contain),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
+///
+///
 
+///
+///
+///
+///
+///
+///
+///
+///
+///
+///
+// import 'package:flutter/material.dart';
+// import 'package:media_kit/media_kit.dart';
+// import 'package:media_kit_video/media_kit_video.dart' as mkv;
+// import 'package:provider/provider.dart';
+// import 'package:scale_button/scale_button.dart';
+//
+// import 'package:myocircle15screens/services/applife_cycle_manager.dart';
+//
+// import '../../components/components_path.dart';
+// import '../../providers/avatar_provider.dart';
+//
+// class AvatarPreviewScreen extends StatefulWidget {
+//   final int index;
+//   final List<dynamic> refVideos;
+//
+//   const AvatarPreviewScreen({
+//     super.key,
+//     required this.index,
+//     required this.refVideos,
+//   });
+//
+//   @override
+//   State<AvatarPreviewScreen> createState() =>
+//       _AvatarPreviewScreenState();
+// }
+//
+// class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
+//   late PageController _pageController;
+//   final Map<int, PageController> _horizontalControllers = {};
+//
+//   PageController _getHorizontalController(int vIndex) {
+//     if (!_horizontalControllers.containsKey(vIndex)) {
+//       _horizontalControllers[vIndex] = PageController();
+//     }
+//     return _horizontalControllers[vIndex]!;
+//   }
+//
+//   int _verticalIndex = 0;
+//   int _horizontalIndex = 0;
+//
+//   final Map<String, Player> _players = {};
+//   final Map<String, mkv.VideoController> _controllers = {};
+//   final Map<String, bool> _isReady = {}; // ✅ track per-video readiness
+//
+//   int activityCounts = 0;
+//   bool _isDisposed = false;
+//
+//   @override
+//   void initState() {
+//     super.initState();
+//     ActivityMonitor.start();
+//     activityCounts = ActivityMonitor.count;
+//
+//     _verticalIndex = widget.index;
+//     _pageController = PageController(initialPage: _verticalIndex);
+//
+//     _loadOnlyCurrentVideo(_verticalIndex, 0);
+//   }
+//
+//   Future<void> _loadController(int vIndex, int hIndex) async {
+//     final key = '$vIndex-$hIndex';
+//     if (_players.containsKey(key)) return;
+//
+//     final id = widget.refVideos[vIndex][hIndex];
+//     final url =
+//         "https://api.myocircle.com/api/api/auth/stream?videoId=$id&type=skillVideos&playName=master.m3u8";
+//
+//     //final player = Player();
+//     final player = Player(
+//       configuration: const PlayerConfiguration(
+//         bufferSize: 8 * 1024 * 1024, // 🔥 faster startup
+//       ),
+//     );
+//     final controller = mkv.VideoController(player);
+//
+//     _players[key] = player;
+//     _controllers[key] = controller;
+//     _isReady[key] = false; // ✅ not ready yet
+//
+//     await player.open(Media(url), play: false);
+//
+//     // ✅ Wait for first real position tick — means decoder is live
+//     //player.stream.position.firstWhere((pos) => pos.inMilliseconds > 0).then((_) async {
+//     player.stream.buffer.firstWhere((b) => b > Duration.zero).then((_) async {
+//       if (_isDisposed) return;
+//
+//       await player.seek(Duration.zero); // ✅ rewind to true start
+//
+//       final currentKey = '$_verticalIndex-$_horizontalIndex';
+//       if (key == currentKey) {
+//         await player.play();
+//       }
+//
+//       if (!_isDisposed && mounted) {
+//         setState(() {
+//           _isReady[key] = true; // ✅ show video widget now
+//         });
+//       }
+//     }).catchError((_) {});
+//   }
+//
+//   Future<void> _loadOnlyCurrentVideo(int vIndex, int hIndex) async {
+//     if (_isDisposed) return;
+//
+//     await _loadController(vIndex, hIndex);
+//
+//     // preload neighbors
+//     if (hIndex + 1 < widget.refVideos[vIndex].length) {
+//      // _loadController(vIndex, hIndex + 1);
+//     }
+//     if (hIndex - 1 >= 0) {
+//      // _loadController(vIndex, hIndex - 1);
+//     }
+//
+//     _playOnlyCurrentVideo(vIndex, hIndex);
+//     _disposeFarControllers(vIndex, hIndex);
+//
+//     if (!_isDisposed && mounted) setState(() {});
+//   }
+//
+//   void _playOnlyCurrentVideo(int vIndex, int hIndex) {
+//     final currentKey = '$vIndex-$hIndex';
+//     _players.forEach((key, player) async {
+//       if (key == currentKey) {
+//         await player.play();
+//       } else {
+//         await player.pause();
+//       }
+//     });
+//   }
+//
+//   void _disposeFarControllers(int vIndex, int hIndex) {
+//     final keepKeys = [
+//       '$vIndex-$hIndex',
+//       '$vIndex-${hIndex + 1}',
+//       '$vIndex-${hIndex - 1}',
+//     ];
+//
+//     final keysToRemove =
+//     _players.keys.where((key) => !keepKeys.contains(key)).toList();
+//
+//     for (final key in keysToRemove) {
+//       try { _players[key]?.dispose(); } catch (_) {}
+//       _players.remove(key);
+//       _controllers.remove(key);
+//       _isReady.remove(key);
+//     }
+//   }
+//
+//   @override
+//   void dispose() {
+//     _isDisposed = true;
+//     for (final player in _players.values) {
+//       try { player.dispose(); } catch (_) {}
+//     }
+//     _players.clear();
+//     _controllers.clear();
+//     _isReady.clear();
+//     _pageController.dispose();
+//     for (final c in _horizontalControllers.values) { c.dispose(); }
+//     _horizontalControllers.clear();
+//     ActivityMonitor.setCount(activityCounts - 1);
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenWidth = MediaQuery.of(context).size.width;
+//
+//     return Stack(
+//       alignment: Alignment.center,
+//       children: [
+//         PageView.builder(
+//           scrollDirection: Axis.vertical,
+//           controller: _pageController,
+//           physics: const PageScrollPhysics(),
+//           onPageChanged: (vIndex) {
+//             if (_isDisposed) return;
+//             setState(() {
+//               _verticalIndex = vIndex;
+//               _horizontalIndex = 0;
+//             });
+//             _getHorizontalController(vIndex).jumpToPage(0);
+//             _loadOnlyCurrentVideo(vIndex, 0);
+//           },
+//           itemCount: widget.refVideos.length,
+//           itemBuilder: (context, vIndex) {
+//             return PageView.builder(
+//               controller: _getHorizontalController(vIndex),
+//               physics: const PageScrollPhysics(),
+//               onPageChanged: (hIndex) {
+//                 if (_isDisposed) return;
+//                 setState(() => _horizontalIndex = hIndex);
+//                 _loadOnlyCurrentVideo(vIndex, hIndex);
+//               },
+//               itemCount: widget.refVideos[vIndex].length,
+//               itemBuilder: (context, hIndex) {
+//                 final key = '$vIndex-$hIndex';
+//                 final controller = _controllers[key];
+//                 final isReady = _isReady[key] ?? false;
+//
+//                 return Stack(
+//                   fit: StackFit.expand,
+//                   children: [
+//                     // ✅ Always show loader as base layer
+//                     const Center(
+//                       child: CircularProgressIndicator(color: Colors.white),
+//                     ),
+//
+//                     // ✅ Only show video once it's truly ready
+//                     if (controller != null && isReady)
+//                       mkv.Video(
+//                         controller: controller,
+//                         fit: BoxFit.cover,
+//                         controls: (state) => const SizedBox(),
+//                       ),
+//                   ],
+//                 );
+//               },
+//             );
+//           },
+//         ),
+//
+//         // vertical dots
+//         Positioned(
+//           right: 10,
+//           child: Column(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             children: List.generate(
+//               widget.refVideos.length,
+//                   (index) => GestureDetector(
+//                 onTap: () => _pageController.animateToPage(
+//                   index,
+//                   duration: const Duration(milliseconds: 300),
+//                   curve: Curves.easeInOut,
+//                 ),
+//                 child: Padding(
+//                   padding: const EdgeInsets.symmetric(vertical: 4),
+//                   child: Image.asset(
+//                     _verticalIndex == index ? DOT_COLORED : DOT_WHITE,
+//                     height: 30,
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//
+//         // horizontal dots
+//         Positioned(
+//           bottom: 120,
+//           child: Row(
+//             children: List.generate(
+//               widget.refVideos[_verticalIndex].length,
+//                   (index) => GestureDetector(
+//                 onTap: () => _getHorizontalController(_verticalIndex)
+//                     .animateToPage(
+//                   index,
+//                   duration: const Duration(milliseconds: 300),
+//                   curve: Curves.easeInOut,
+//                 ),
+//                 child: Padding(
+//                   padding: const EdgeInsets.symmetric(horizontal: 4),
+//                   child: Image.asset(
+//                     _horizontalIndex == index ? DOT_COLORED : DOT_WHITE,
+//                     height: 30,
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//
+//         // select button
+//         Positioned(
+//           bottom: 0,
+//           child: Padding(
+//             padding: EdgeInsets.only(left: screenWidth / 17),
+//             child: SizedBox(
+//               height: 120,
+//               child: ScaleButton(
+//                 onTap: () {
+//                   if (_isDisposed) return;
+//                   Provider.of<AvatarProvider>(context, listen: false)
+//                       .setAvatar(_verticalIndex);
+//                   Navigator.pop(context);
+//                 },
+//                 child: Image.asset(SELECT_BTN, fit: BoxFit.contain),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
+///
+///
+///
+///
+///
+///
+
+
+import 'package:better_player_enhanced/better_player.dart';
 import 'package:flutter/material.dart';
-import 'package:media_kit/media_kit.dart';
-import 'package:media_kit_video/media_kit_video.dart' as mkv;
 import 'package:provider/provider.dart';
 import 'package:scale_button/scale_button.dart';
-
 import 'package:myocircle15screens/services/applife_cycle_manager.dart';
-
 import '../../components/components_path.dart';
 import '../../providers/avatar_provider.dart';
 
@@ -349,6 +1018,7 @@ class AvatarPreviewScreen extends StatefulWidget {
 class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
   late PageController _pageController;
   final Map<int, PageController> _horizontalControllers = {};
+
   PageController _getHorizontalController(int vIndex) {
     if (!_horizontalControllers.containsKey(vIndex)) {
       _horizontalControllers[vIndex] = PageController();
@@ -359,20 +1029,15 @@ class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
   int _verticalIndex = 0;
   int _horizontalIndex = 0;
 
-  final Map<String, Player> _players = {};
-  final Map<String, mkv.VideoController> _controllers = {};
-  final Map<String, bool> _isPlaying = {};
+  final Map<String, BetterPlayerController> _controllers = {};
+  final Map<String, bool> _isReady = {};
 
   int activityCounts = 0;
   bool _isDisposed = false;
-  bool isDisposing = false;
 
   @override
   void initState() {
     super.initState();
-
-    MediaKit.ensureInitialized();
-
     ActivityMonitor.start();
     activityCounts = ActivityMonitor.count;
 
@@ -382,86 +1047,69 @@ class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
     _loadOnlyCurrentVideo(_verticalIndex, 0);
   }
 
-  // ================= PLAYER =================
-
   Future<void> _loadController(int vIndex, int hIndex) async {
     final key = '$vIndex-$hIndex';
-
-    if (_players.containsKey(key)) return;
+    if (_controllers.containsKey(key)) return;
 
     final id = widget.refVideos[vIndex][hIndex];
-
     final url =
         "https://api.myocircle.com/api/api/auth/stream?videoId=$id&type=skillVideos&playName=master.m3u8";
 
-    final player = Player();
-    final controller = mkv.VideoController(player);
+    final dataSource = BetterPlayerDataSource(
+      BetterPlayerDataSourceType.network,
+      url,
+      videoFormat: BetterPlayerVideoFormat.hls,
+    );
 
-    player.setPlaylistMode(PlaylistMode.none);
+    final controller = BetterPlayerController(
+      BetterPlayerConfiguration(
+        autoPlay: false,
+        fit: BoxFit.contain, // ✅ IMPORTANT
+        expandToFill: false, // ✅ IMPORTANT
+        controlsConfiguration: const BetterPlayerControlsConfiguration(
+          showControls: false,
+        ),
+      ),
+      betterPlayerDataSource: dataSource,
+    );
 
-    /// 🔥 IMPORTANT SETTINGS
-    player.setVolume(100);
+    _controllers[key] = controller;
+    _isReady[key] = false;
 
-    /// ❌ No autoplay initially
-    player.open(Media(url), play: false);
+    controller.addEventsListener((event) async {
+      if (_isDisposed) return;
 
-    bool initialized = false;
-
-    player.stream.duration.listen((duration) async {
-      if (duration > Duration.zero && !initialized) {
-        initialized = true;
-
-        /// ✅ Force start from 0
-        await player.pause();
-        await player.seek(Duration.zero);
-
-        /// 🔥 EXTRA BUFFER TIME (important fix)
-        await Future.delayed(const Duration(milliseconds: 300));
-
-        /// ✅ ONLY PLAY CURRENT VIDEO
+      if (event.betterPlayerEventType ==
+          BetterPlayerEventType.initialized) {
         final currentKey = '$_verticalIndex-$_horizontalIndex';
 
         if (key == currentKey) {
-          await player.play();
-          _isPlaying[key] = true;
-        } else {
-          await player.pause(); // 🔥 IMPORTANT
-          _isPlaying[key] = false;
+          await controller.play();
         }
 
-        _isPlaying[key] = true;
-
         if (!_isDisposed && mounted) {
-          setState(() {});
+          setState(() {
+            _isReady[key] = true;
+          });
         }
       }
     });
-
-
-
-    _players[key] = player;
-    _controllers[key] = controller;
   }
 
   Future<void> _loadOnlyCurrentVideo(int vIndex, int hIndex) async {
     if (_isDisposed) return;
 
-    /// ✅ Load current video
     await _loadController(vIndex, hIndex);
 
-    /// ✅ Preload NEXT video (important for smoothness)
+    // preload neighbors
     if (hIndex + 1 < widget.refVideos[vIndex].length) {
-      await _loadController(vIndex, hIndex + 1);
+      // _loadController(vIndex, hIndex + 1);
     }
-
-    /// (optional) preload previous for back scroll smooth
     if (hIndex - 1 >= 0) {
-      await _loadController(vIndex, hIndex - 1);
+      // _loadController(vIndex, hIndex - 1);
     }
 
     _playOnlyCurrentVideo(vIndex, hIndex);
-
-    /// ✅ Dispose others (keep only 3 max)
     _disposeFarControllers(vIndex, hIndex);
 
     if (!_isDisposed && mounted) setState(() {});
@@ -470,22 +1118,16 @@ class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
   void _playOnlyCurrentVideo(int vIndex, int hIndex) {
     final currentKey = '$vIndex-$hIndex';
 
-    _players.forEach((key, player) async {
+    _controllers.forEach((key, controller) async {
       if (key == currentKey) {
-        await player.play();
-        _isPlaying[key] = true;
+        await controller.play();
       } else {
-        await player.pause();
-        _isPlaying[key] = false;
+        await controller.pause();
       }
     });
   }
 
   void _disposeFarControllers(int vIndex, int hIndex) {
-    if (isDisposing) return;
-
-    setState(() => isDisposing = true);
-
     final keepKeys = [
       '$vIndex-$hIndex',
       '$vIndex-${hIndex + 1}',
@@ -493,46 +1135,47 @@ class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
     ];
 
     final keysToRemove =
-    _players.keys.where((key) => !keepKeys.contains(key)).toList();
+    _controllers.keys.where((key) => !keepKeys.contains(key)).toList();
 
     for (final key in keysToRemove) {
-      try {
-        _players[key]?.dispose();
-      } catch (_) {}
+      final controller = _controllers[key];
 
-      _players.remove(key);
+      /// 🔥 IMPORTANT: delay dispose to avoid crash
+      Future.microtask(() {
+        try {
+          controller?.dispose();
+        } catch (_) {}
+      });
+
       _controllers.remove(key);
-      _isPlaying.remove(key);
+      _isReady.remove(key);
     }
-
-    setState(() => isDisposing = false);
   }
 
   @override
   void dispose() {
     _isDisposed = true;
 
-    for (final player in _players.values) {
+    /// ✅ dispose only BetterPlayer
+    for (final controller in _controllers.values) {
       try {
-        player.dispose();
+        controller.dispose();
       } catch (_) {}
     }
 
-    _players.clear();
     _controllers.clear();
+    _isReady.clear();
 
     _pageController.dispose();
-    for (final controller in _horizontalControllers.values) {
-      controller.dispose();
+
+    for (final c in _horizontalControllers.values) {
+      c.dispose();
     }
     _horizontalControllers.clear();
 
     ActivityMonitor.setCount(activityCounts - 1);
-
     super.dispose();
   }
-
-  // ================= UI =================
 
   @override
   Widget build(BuildContext context) {
@@ -541,23 +1184,17 @@ class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
     return Stack(
       alignment: Alignment.center,
       children: [
-        /// 🔥 VERTICAL SCROLL
         PageView.builder(
           scrollDirection: Axis.vertical,
           controller: _pageController,
           physics: const PageScrollPhysics(),
-          pageSnapping: true,
           onPageChanged: (vIndex) {
             if (_isDisposed) return;
-
             setState(() {
               _verticalIndex = vIndex;
               _horizontalIndex = 0;
             });
-
             _getHorizontalController(vIndex).jumpToPage(0);
-
-            /// 🔥 Load only needed videos
             _loadOnlyCurrentVideo(vIndex, 0);
           },
           itemCount: widget.refVideos.length,
@@ -565,39 +1202,61 @@ class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
             return PageView.builder(
               controller: _getHorizontalController(vIndex),
               physics: const PageScrollPhysics(),
-              pageSnapping: true,
               onPageChanged: (hIndex) {
                 if (_isDisposed) return;
-
                 setState(() => _horizontalIndex = hIndex);
-
-                /// 🔥 Load smart
                 _loadOnlyCurrentVideo(vIndex, hIndex);
               },
               itemCount: widget.refVideos[vIndex].length,
               itemBuilder: (context, hIndex) {
                 final key = '$vIndex-$hIndex';
                 final controller = _controllers[key];
+                final isReady = _isReady[key] ?? false;
 
-                if (controller != null) {
-                  return SizedBox.expand(
-                    child: mkv.Video(
-                      controller: controller,
-                      fit: BoxFit.cover,
-                      controls: (state) => SizedBox(),
+                return Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    const Center(
+                      child: CircularProgressIndicator(color: Colors.white),
                     ),
-                  );
-                } else {
-                  return const Center(
-                    child: CircularProgressIndicator(color: Colors.white),
-                  );
-                }
+
+                    if (controller != null && isReady)
+                      Positioned.fill(
+                        child: Container(
+                          color: Colors.black,
+                          child: Center(
+                            child: Builder(
+                              builder: (context) {
+                                final aspectRatio =
+                                    controller.videoPlayerController?.value.aspectRatio ?? 9 / 16;
+
+                                final screenHeight = MediaQuery.of(context).size.height;
+                                final videoWidth = screenHeight * aspectRatio;
+
+                                return Transform.scale(
+                                  scale: 1.06, // 🔥 adjust between 1.05 - 1.15
+                                  child: SizedBox(
+                                    height: screenHeight,
+                                    width: videoWidth,
+                                    child: BetterPlayer(
+                                      key: ValueKey(key),
+                                      controller: controller,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ),
+                      )
+                  ],
+                );
               },
             );
           },
         ),
 
-        /// 🔥 VERTICAL DOTS (CLICKABLE)
+        // vertical dots
         Positioned(
           right: 10,
           child: Column(
@@ -605,13 +1264,11 @@ class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
             children: List.generate(
               widget.refVideos.length,
                   (index) => GestureDetector(
-                onTap: () {
-                  _pageController.animateToPage(
-                    index,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
-                },
+                onTap: () => _pageController.animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Image.asset(
@@ -624,20 +1281,19 @@ class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
           ),
         ),
 
-        /// 🔥 HORIZONTAL DOTS (CLICKABLE)
+        // horizontal dots
         Positioned(
           bottom: 120,
           child: Row(
             children: List.generate(
               widget.refVideos[_verticalIndex].length,
                   (index) => GestureDetector(
-                onTap: () {
-                  _getHorizontalController(_verticalIndex).animateToPage(
-                    index,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                  );
-                },
+                onTap: () => _getHorizontalController(_verticalIndex)
+                    .animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                ),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   child: Image.asset(
@@ -650,7 +1306,7 @@ class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
           ),
         ),
 
-        /// 🔥 SELECT BUTTON
+        // select button
         Positioned(
           bottom: 0,
           child: Padding(
@@ -660,10 +1316,8 @@ class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
               child: ScaleButton(
                 onTap: () {
                   if (_isDisposed) return;
-
                   Provider.of<AvatarProvider>(context, listen: false)
                       .setAvatar(_verticalIndex);
-
                   Navigator.pop(context);
                 },
                 child: Image.asset(SELECT_BTN, fit: BoxFit.contain),

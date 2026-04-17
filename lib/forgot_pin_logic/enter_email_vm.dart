@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../services/api_service.dart';
+
 
 String _client_key = "VKpWmI2vQQ5laYXZjR4DgKBPcxvj0q5Bnty8";
 
@@ -23,7 +25,8 @@ class ForgotPinProvider extends ChangeNotifier {
 
     try {
 
-      final url = "https://api.myocircle.com/api/app/forgotPasswordPatient";
+      // final url = "https://api.myocircle.com/api/app/forgotPasswordPatient";
+      final url = "${ApiService.baseUrl}/forgotPasswordPatient";
 
       final body = {
         "email": email
@@ -73,8 +76,8 @@ class ForgotPinProvider extends ChangeNotifier {
 
     try {
 
-      final url = "https://api.myocircle.com/api/app/verifyOtpPatient";
-
+      // final url = "https://api.myocircle.com/api/app/verifyOtpPatient";
+      final url = "${ApiService.baseUrl}/verifyOtpPatient";
       final body = {
         "email": email,
         "otp": int.parse(otp)
@@ -130,7 +133,8 @@ class ForgotPinProvider extends ChangeNotifier {
 
     try {
 
-      final url = "https://api.myocircle.com/api/app/resetPatientPin";
+      // final url = "https://api.myocircle.com/api/app/resetPatientPin";
+      final url = "${ApiService.baseUrl}/resetPatientPin";
 
       final body = {
         "profileId": selectedProfileId,

@@ -1,3 +1,4 @@
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:myocircle15screens/components/custom_circular_progress_indicator.dart';
 import 'package:myocircle15screens/components/golden_shadow.dart';
@@ -452,8 +453,8 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
           backgroundColor: Colors.transparent,
           child: Container(
             padding: EdgeInsets.all(16),
-            width: 250,
-            height: 250,
+            width: 300,
+            height: 280,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -486,12 +487,13 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                   height: 115,
                   width: 115,
                 ),
+                SizedBox(height: 10),
                 Center(
                   child: Text(
                     "$message",
                     style: TextStyle(
                       fontFamily: "Alegreya_Sans",
-                      fontSize: 16,
+                      fontSize: 18,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -624,224 +626,343 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
               ],
             ),
           ),
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: EdgeInsets.only(top: 8),
-              child: Skeletonizer(
-                effect: ShimmerEffect(
-                  duration: Duration(milliseconds: 1500),
-                  baseColor: Colors.black12,
-                  highlightColor: Colors.white10,
-                ),
-                enabled: landingPageData?['profileName'] == null,
-                child: Consumer<SessionProvider>(
-                  builder: (context, session, _) {
-                    final userData = session.userData;
-                    List familyMembers = userData?['familyMembers'] ?? [];
-                    final family = userData?['familyMembers'] ?? [];
-                    print("familyMembers: $familyMembers");
-                    final isParentPatient = familyMembers.length > 1;
+//           Expanded(
+//             flex: 1,
+//             child: Padding(
+//               padding: EdgeInsets.only(top: 8),
+//               child: Skeletonizer(
+//                 effect: ShimmerEffect(
+//                   duration: Duration(milliseconds: 1500),
+//                   baseColor: Colors.black12,
+//                   highlightColor: Colors.white10,
+//                 ),
+//                 enabled: landingPageData?['profileName'] == null,
+//                 child: Consumer<SessionProvider>(
+//                   builder: (context, session, _) {
+//                     final userData = session.userData;
+//                     List familyMembers = userData?['familyMembers'] ?? [];
+//                     final family = userData?['familyMembers'] ?? [];
+//                     print("familyMembers: $familyMembers");
+//                     final isParentPatient = familyMembers.length > 1;
+//
+//                 // ✅ CASE 1: No family members at all
+//                     if (familyMembers.isEmpty) {
+//                       return Text(
+//                         "${userData?['userProfileName'] ?? ''}",
+//                         style: const TextStyle(
+//                           fontSize: 24,
+//                           fontFamily: "Alegreya_Sans",
+//                           color: Color(0xff8E8E93),
+//                         ),
+//                       );
+//                     }
+//
+//                 // ✅ CASE 2: Exactly one family member
+//                 //     if (familyMembers.length == 1) {
+//                 //       return Text(
+//                 //         "${familyMembers.first['patientFirstName'] ?? ''}",
+//                 //         style: const TextStyle(
+//                 //           fontSize: 24,
+//                 //           fontFamily: "Alegreya_Sans",
+//                 //           color: Color(0xff8E8E93),
+//                 //         ),
+//                 //       );
+//                 //     }
+//
+// // ✅ CASE 3: Multiple family members → dropdown below
+//
+//                     final selectedProfileId =
+//                         session.selectedProfileId ?? userData?['profileId'];
+//
+//                     final Set<int> seenIds = {};
+//                     final List<DropdownMenuItem<int>> dropdownItems = [];
+//                     for (final member in family) {
+//                       final int profileId = member['profileId'];
+//                       if (seenIds.add(profileId)) {
+//                         dropdownItems.add(
+//                           DropdownMenuItem<int>(
+//                             value: profileId,
+//                             child: Text(member['userProfileName']),
+//                           ),
+//                         );
+//                       }
+//                     }
+//
+//                     final containsSelected = dropdownItems
+//                         .any((item) => item.value == selectedProfileId);
+//                     final int? safeValue = containsSelected
+//                         ? selectedProfileId
+//                         : dropdownItems.first.value;
+//
+//                     return Theme(
+//                       data: Theme.of(context).copyWith(
+//                         splashColor: Colors.transparent,
+//                         highlightColor: Colors.transparent,
+//                         focusColor: Colors.transparent,
+//                       ),
+//                       child: SizedBox(
+//                         width: 200,
+//                         height: 52,
+//                         child: CustomDropdown<int>(
+//                           value: safeValue,
+//                           items: userData?['familyMembers']
+//                                   ?.map<int>((m) => m['profileId'] as int)
+//                                   .toList() ??
+//                               [],
+//
+//                           // ----------------- ITEM BUILDER (Beautiful UI) -----------------
+//                           itemBuilder: (context, item, selected) {
+//                             final member = userData?['familyMembers']
+//                                 ?.firstWhere((m) => m['profileId'] == item);
+//
+//                             final name =
+//                                 member?['userProfileName'] ?? "Unknown";
+//                             final age = member?['age'];
+//
+//                             return Container(
+//                               height: 48,
+//                               decoration: BoxDecoration(
+//                                 color: selected
+//                                     ? const Color(0xAACFFAFE)
+//                                     : Colors.white,
+//                                 borderRadius: BorderRadius.circular(10),
+//                               ),
+//                               padding: const EdgeInsets.symmetric(
+//                                   horizontal: 10, vertical: 0),
+//                               child: Row(
+//                                 children: [
+//                                   Container(
+//                                     height: 24,
+//                                     width: 24,
+//                                     decoration: BoxDecoration(
+//                                       shape: BoxShape.circle,
+//                                       color: selected
+//                                           ? Color(0xFF0891B2)
+//                                           : Color(0xff999999),
+//                                     ),
+//                                     alignment: Alignment.center,
+//                                     child: Icon(
+//                                         (int.parse(age) >= 18)
+//                                             ? Icons.person_rounded
+//                                             : Icons.child_care_rounded,
+//                                         size: 20,
+//                                         color: Colors.white),
+//                                   ),
+//                                   const SizedBox(width: 10),
+//                                   Expanded(
+//                                     child: Text(
+//                                       name,
+//                                       style: const TextStyle(
+//                                         fontSize: 18,
+//                                         fontFamily: "Alegreya_Sans",
+//                                         color: Colors.black87,
+//                                       ),
+//                                     ),
+//                                   ),
+//                                   selected
+//                                       ? Icon(
+//                                           Icons.check_rounded,
+//                                           size: 24,
+//                                           color: Color(0xFF0891B2),
+//                                         )
+//                                       : SizedBox(width: 24),
+//                                 ],
+//                               ),
+//                             );
+//                           },
+//
+//                           // ----------------- SELECTED ITEM BUILDER -----------------
+//                           selectedItemBuilder: (context, item, selected) {
+//                             final member = userData?['familyMembers']
+//                                 ?.firstWhere((m) => m['profileId'] == item);
+//
+//                             final name =
+//                                 member?['userProfileName'] ?? "Unknown";
+//
+//                             return Align(
+//                               alignment: Alignment.centerLeft,
+//                               child: Text(
+//                                 name,
+//                                 style: const TextStyle(
+//                                   fontSize: 20,
+//                                   fontFamily: "Alegreya_Sans",
+//                                   color: Color(0xff8E8E93),
+//                                 ),
+//                               ),
+//                             );
+//                           },
+//
+//                           // ----------------- DROPDOWN STYLING -----------------
+//                           backgroundColor: Colors.white,
+//                           menuBackgroundColor: Colors.white,
+//                           borderRadius: BorderRadius.circular(14),
+//                           boxShadow: const [
+//                             BoxShadow(
+//                               color: Color(0x1A000000),
+//                               blurRadius: 12,
+//                               offset: Offset(0, 6),
+//                             ),
+//                           ],
+//                           buttonHeight: 52,
+//                           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
+//
+//                           // Beautiful caret
+//                           showCaret: true,
+//                           caretIcon: const Icon(
+//                             Icons.keyboard_arrow_down_rounded,
+//                             size: 26,
+//                             color: Colors.deepPurple,
+//                           ),
+//
+//                           // ----------------- LOGIC (YOUR ORIGINAL CODE) -----------------
+//                           onChanged: (int? newProfileId) async {
+//                             if (newProfileId != null &&
+//                                 newProfileId != session.selectedProfileId) {
+//                               session.setSelectedProfileId(newProfileId);
+//
+//                               final _userToken = userData?['user_token'];
+//                               final _userId = userData?['userId'];
+//
+//                               var getResponse = await ApiService.landingPage(
+//                                 context,
+//                                 _userToken,
+//                                 newProfileId,
+//                                 _userId,
+//                               );
+//
+//                               if (getResponse['code'] == 200 &&
+//                                   context.mounted) {
+//                                 session.setLandingPageData(getResponse['data']);
+//                               }
+//                             }
+//                           },
+//                         ),
+//                       ),
+//                     );
+//                   },
+//                 ),
+//               ),
+//             ),
+//           ),
+        ///
+      Expanded(
+        flex: 1,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Skeletonizer(
+            effect: ShimmerEffect(
+              duration: Duration(milliseconds: 1500),
+              baseColor: Colors.black12,
+              highlightColor: Colors.white10,
+            ),
+            enabled: landingPageData?['profileName'] == null,
+            child: Consumer<SessionProvider>(
+                builder: (context, session, _) {
+                  final userData = session.userData;
+                  final List familyMembers = userData?['familyMembers'] ?? [];
 
-// ✅ CASE 1: No family members at all
-                    if (familyMembers.isEmpty) {
-                      return Text(
-                        "${userData?['userProfileName'] ?? ''}",
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontFamily: "Alegreya_Sans",
-                          color: Color(0xff8E8E93),
-                        ),
-                      );
-                    }
+                  final selectedProfileId =
+                      session.selectedProfileId ?? userData?['profileId'];
 
-// ✅ CASE 2: Exactly one family member
-                    if (familyMembers.length == 1) {
-                      return Text(
-                        "${familyMembers.first['patientFirstName'] ?? ''}",
-                        style: const TextStyle(
-                          fontSize: 24,
-                          fontFamily: "Alegreya_Sans",
-                          color: Color(0xff8E8E93),
-                        ),
-                      );
-                    }
-
-// ✅ CASE 3: Multiple family members → dropdown below
-
-                    final selectedProfileId =
-                        session.selectedProfileId ?? userData?['profileId'];
-
-                    final Set<int> seenIds = {};
-                    final List<DropdownMenuItem<int>> dropdownItems = [];
-                    for (final member in family) {
-                      final int profileId = member['profileId'];
-                      if (seenIds.add(profileId)) {
-                        dropdownItems.add(
-                          DropdownMenuItem<int>(
-                            value: profileId,
-                            child: Text(member['userProfileName']),
-                          ),
-                        );
-                      }
-                    }
-
-                    final containsSelected = dropdownItems
-                        .any((item) => item.value == selectedProfileId);
-                    final int? safeValue = containsSelected
-                        ? selectedProfileId
-                        : dropdownItems.first.value;
-
-                    return Theme(
-                      data: Theme.of(context).copyWith(
-                        splashColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        focusColor: Colors.transparent,
-                      ),
-                      child: SizedBox(
-                        width: 200,
-                        height: 52,
-                        child: CustomDropdown<int>(
-                          value: safeValue,
-                          items: userData?['familyMembers']
-                                  ?.map<int>((m) => m['profileId'] as int)
-                                  .toList() ??
-                              [],
-
-                          // ----------------- ITEM BUILDER (Beautiful UI) -----------------
-                          itemBuilder: (context, item, selected) {
-                            final member = userData?['familyMembers']
-                                ?.firstWhere((m) => m['profileId'] == item);
-
-                            final name =
-                                member?['userProfileName'] ?? "Unknown";
-                            final age = member?['age'];
-
-                            return Container(
-                              height: 48,
-                              decoration: BoxDecoration(
-                                color: selected
-                                    ? const Color(0xAACFFAFE)
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 0),
-                              child: Row(
-                                children: [
-                                  Container(
-                                    height: 24,
-                                    width: 24,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: selected
-                                          ? Color(0xFF0891B2)
-                                          : Color(0xff999999),
-                                    ),
-                                    alignment: Alignment.center,
-                                    child: Icon(
-                                        (int.parse(age) >= 18)
-                                            ? Icons.person_rounded
-                                            : Icons.child_care_rounded,
-                                        size: 20,
-                                        color: Colors.white),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      name,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontFamily: "Alegreya_Sans",
-                                        color: Colors.black87,
-                                      ),
-                                    ),
-                                  ),
-                                  selected
-                                      ? Icon(
-                                          Icons.check_rounded,
-                                          size: 24,
-                                          color: Color(0xFF0891B2),
-                                        )
-                                      : SizedBox(width: 24),
-                                ],
-                              ),
-                            );
-                          },
-
-                          // ----------------- SELECTED ITEM BUILDER -----------------
-                          selectedItemBuilder: (context, item, selected) {
-                            final member = userData?['familyMembers']
-                                ?.firstWhere((m) => m['profileId'] == item);
-
-                            final name =
-                                member?['userProfileName'] ?? "Unknown";
-
-                            return Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                name,
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: "Alegreya_Sans",
-                                  color: Color(0xff8E8E93),
-                                ),
-                              ),
-                            );
-                          },
-
-                          // ----------------- DROPDOWN STYLING -----------------
-                          backgroundColor: Colors.white,
-                          menuBackgroundColor: Colors.white,
-                          borderRadius: BorderRadius.circular(14),
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x1A000000),
-                              blurRadius: 12,
-                              offset: Offset(0, 6),
-                            ),
-                          ],
-                          buttonHeight: 52,
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 0),
-
-                          // Beautiful caret
-                          showCaret: true,
-                          caretIcon: const Icon(
-                            Icons.keyboard_arrow_down_rounded,
-                            size: 26,
-                            color: Colors.deepPurple,
-                          ),
-
-                          // ----------------- LOGIC (YOUR ORIGINAL CODE) -----------------
-                          onChanged: (int? newProfileId) async {
-                            if (newProfileId != null &&
-                                newProfileId != session.selectedProfileId) {
-                              session.setSelectedProfileId(newProfileId);
-
-                              final _userToken = userData?['user_token'];
-                              final _userId = userData?['userId'];
-
-                              var getResponse = await ApiService.landingPage(
-                                context,
-                                _userToken,
-                                newProfileId,
-                                _userId,
-                              );
-
-                              if (getResponse['code'] == 200 &&
-                                  context.mounted) {
-                                session.setLandingPageData(getResponse['data']);
-                              }
-                            }
-                          },
-                        ),
+                  // ✅ CASE 1: No members
+                  if (familyMembers.isEmpty) {
+                    return Text(
+                      userData?['userProfileName'] ?? "",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        color: Color(0xff8E8E93),
                       ),
                     );
-                  },
-                ),
-              ),
+                  }
+
+                  // ✅ CASE 2: Only ONE member → show TEXT (NO dropdown)
+                  if (familyMembers.length == 1) {
+                    final member = familyMembers.first;
+
+                    return Text(
+                      member['userProfileName'] ?? "Unknown",
+                      style: const TextStyle(
+                        fontSize: 20,
+                        color: Color(0xff8E8E93),
+                      ),
+                    );
+                  }
+
+                  // ✅ CASE 3: Multiple members → show DROPDOWN
+
+                  final containsSelected = familyMembers.any(
+                          (m) => m['profileId'] == selectedProfileId);
+
+                  final int safeValue = containsSelected
+                      ? selectedProfileId
+                      : familyMembers.first['profileId'];
+
+                  return DropdownButtonHideUnderline(
+                    child: DropdownButton2<int>(
+                      isExpanded: true,
+                      value: safeValue,
+
+                      items: familyMembers.map<DropdownMenuItem<int>>((member) {
+                        return DropdownMenuItem<int>(
+                          value: member['profileId'],
+                          child: Text(
+                            member['userProfileName'] ?? "Unknown",
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                        );
+                      }).toList(),
+
+                      onChanged: (int? newProfileId) async {
+                        if (newProfileId != null &&
+                            newProfileId != session.selectedProfileId) {
+                          session.setSelectedProfileId(newProfileId);
+
+                          final _userToken = userData?['user_token'];
+                          final _userId = userData?['userId'];
+
+                          var getResponse = await ApiService.landingPage(
+                            context,
+                            _userToken,
+                            newProfileId,
+                            _userId,
+                          );
+
+                          if (getResponse['code'] == 200 && context.mounted) {
+                            session.setLandingPageData(getResponse['data']);
+                          }
+                        }
+                      },
+
+                      buttonStyleData: ButtonStyleData(
+                        height: 50,
+                        width: 200,
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        decoration: BoxDecoration(
+                          // borderRadius: BorderRadius.circular(12),
+                          color: Colors.white,
+                        ),
+                      ),
+
+                      dropdownStyleData: DropdownStyleData(
+                        maxHeight: 250,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.white,
+                        ),
+                      ),
+
+                      iconStyleData: const IconStyleData(
+                        icon: Icon(Icons.keyboard_arrow_down),
+                        iconSize: 24,
+                      ),
+                    ),
+                  );
+                }
             ),
           ),
+        ),
+      ),
+          ///
           Expanded(
             flex: 10,
             child: showRewards
@@ -881,39 +1002,77 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                                               Padding(
                                                 padding:
                                                     const EdgeInsets.all(8.0),
-                                                child: Container(
-                                                  height: 58,
-                                                  width: 58,
-                                                    decoration: BoxDecoration(
+                                                // child: Container(
+                                                //   height: 58,
+                                                //   width: 58,
+                                                //     decoration: BoxDecoration(
+                                                //         image: DecorationImage(
+                                                //             image: AssetImage(
+                                                //                 AVATAR_CONTAINER_INNER))),
+                                                //     child: Skeletonizer(
+                                                //       enabled:
+                                                //           landingPageData ==
+                                                //               null,
+                                                //       child: ClipRRect(
+                                                //           borderRadius:
+                                                //               BorderRadius
+                                                //                   .circular(
+                                                //                       100),
+                                                //           child: landingPageData ==
+                                                //                       null ||
+                                                //                   landingPageData[
+                                                //                           'patientAvatarURL'] ==
+                                                //                       null
+                                                //               ? AspectRatio(
+                                                //                   aspectRatio:
+                                                //                       2 / 2,
+                                                //                   child: displayBase64Image(
+                                                //                       defaultBase64))
+                                                //               : Base64ImageWidget(
+                                                //                   key: UniqueKey(),
+                                                //                   base64String: landingPageData['patientAvatarURL'])),
+                                                //     )),
+                                                ///
+                                                child: Stack(
+                                                  alignment: Alignment.center,
+                                                  children: [
+
+                                                    /// 🔥 INNER BACKGROUND (BOTTOM)
+                                                    Container(
+                                                      height: 75,
+                                                      width: 75,
+                                                      decoration: BoxDecoration(
+                                                        shape: BoxShape.circle,
                                                         image: DecorationImage(
-                                                            image: AssetImage(
-                                                                AVATAR_CONTAINER_INNER))),
-                                                    child: Skeletonizer(
-                                                      enabled:
-                                                          landingPageData ==
-                                                              null,
-                                                      child: ClipRRect(
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      100),
-                                                          child: landingPageData ==
-                                                                      null ||
-                                                                  landingPageData[
-                                                                          'patientAvatarURL'] ==
-                                                                      null
-                                                              ? AspectRatio(
-                                                                  aspectRatio:
-                                                                      2 / 2,
-                                                                  child: displayBase64Image(
-                                                                      defaultBase64))
-                                                              : Base64ImageWidget(
-                                                                  key:
-                                                                      UniqueKey(),
-                                                                  base64String:
-                                                                      landingPageData[
-                                                                          'patientAvatarURL'])),
-                                                    )),
+                                                          image: AssetImage(AVATAR_CONTAINER_INNER),
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
+
+                                                    /// 🔥 USER IMAGE (MIDDLE)
+                                                    ClipOval(
+                                                      child: SizedBox(
+                                                        height: 65,
+                                                        width: 65,
+                                                        child: landingPageData == null ||
+                                                            landingPageData['patientAvatarURL'] == null
+                                                            ? Image.memory(
+                                                          base64Decode(defaultBase64),
+                                                          fit: BoxFit.cover,
+                                                        )
+                                                            : Image.memory(
+                                                          base64Decode(
+                                                              landingPageData['patientAvatarURL']),
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
+
+
+                                                  ],
+                                                )
+                                                ///
                                               ),
                                               Image.asset(
                                                   AVATAR_CONTAINER_OUTER),
@@ -936,7 +1095,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                                             Expanded(
                                               flex: 1,
                                               child: Container(
-                                                padding: EdgeInsets.all(5),
+                                                padding: EdgeInsets.all(2.5),
                                                 width: double.infinity,
                                                 decoration: BoxDecoration(
                                                   color: Colors.white,
@@ -973,7 +1132,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                                                           style: TextStyle(
                                                             fontFamily:
                                                                 "Alegreya_Sans",
-                                                            fontSize: 20,
+                                                            fontSize: MediaQuery.of(context).size.width * 0.06,
                                                             color: Color(
                                                                 0xff1F8C85),
                                                             fontWeight:
@@ -990,7 +1149,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                                                           style: TextStyle(
                                                               fontFamily:
                                                                   "Alegreya_Sans",
-                                                              fontSize: 16),
+                                                              fontSize: MediaQuery.of(context).size.width * 0.046),
                                                         ),
                                                       ),
                                                     ),
@@ -1002,7 +1161,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                                             Expanded(
                                               flex: 1,
                                               child: Container(
-                                                padding: EdgeInsets.all(5),
+                                                padding: EdgeInsets.all(2.5),
                                                 width: double.infinity,
                                                 decoration: BoxDecoration(
                                                   color: Colors.white,
@@ -1018,10 +1177,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                                                   ),
                                                   boxShadow: [
                                                     BoxShadow(
-                                                      color: Colors.black
-                                                          .withOpacity(
-                                                        .5,
-                                                      ),
+                                                      color: Colors.black.withOpacity(.5),
                                                       blurRadius: 4.0,
                                                       spreadRadius: 1.0,
                                                       offset: Offset(0.0, 2.0),
@@ -1034,45 +1190,28 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                                                     Expanded(
                                                         flex: 3,
                                                         child: Stack(
-                                                          alignment:
-                                                              Alignment.center,
+                                                          alignment: Alignment.center,
                                                           children: [
                                                             SizedBox(
-                                                              height:
-                                                                  (progress < 100) ? 60 : 65,
-                                                              width: (progress <
-                                                                      100)
-                                                                  ? 60
-                                                                  : 65,
-                                                              child:
-                                                                  GradientCircularProgressIndicator(
-                                                                value:
-                                                                    progress /
-                                                                        100,
-                                                                parentSize:
-                                                                    height /
-                                                                        1.4,
+                                                              height: (progress < 100) ? 60 : 65,
+                                                              width: (progress < 100) ? 60 : 65,
+                                                              child: GradientCircularProgressIndicator(
+                                                                value: progress / 100,
+                                                                parentSize: height / 1.4,
                                                                 colors: [
-                                                                  Color(
-                                                                      0xff3197DB),
-                                                                  Color(
-                                                                      0xff3197DB),
-                                                                  Color(
-                                                                      0xff3197DB),
+                                                                  Color(0xff3197DB),
+                                                                  Color(0xff3197DB),
+                                                                  Color(0xff3197DB),
                                                                 ],
                                                               ),
                                                             ),
                                                             Text(
                                                               "$progress%",
                                                               style: TextStyle(
-                                                                fontFamily:
-                                                                    "Alegreya_Sans",
-                                                                fontSize: 20,
-                                                                color: Color(
-                                                                    0xff3197DB),
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
+                                                                fontFamily: "Alegreya_Sans",
+                                                                fontSize: MediaQuery.of(context).size.width * 0.046,
+                                                                color: Color(0xff3197DB),
+                                                                fontWeight: FontWeight.bold,
                                                               ),
                                                             ),
                                                           ],
@@ -1084,7 +1223,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                                                           "Progress",
                                                           style: TextStyle(
                                                               fontFamily: "Alegreya_Sans",
-                                                              fontSize: 16),
+                                                              fontSize: MediaQuery.of(context).size.width * 0.045),
                                                         ),
                                                       ),
                                                     ),

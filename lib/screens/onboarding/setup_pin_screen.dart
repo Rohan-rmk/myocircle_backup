@@ -89,9 +89,7 @@ class _SetupPinScreenState extends State<SetupPinScreen> {
                     textAlign: TextAlign.center,
                   ),
 
-                  SizedBox(
-                    height: 12,
-                  ),
+                  SizedBox(height: 12),
                   Padding(
                     padding: const EdgeInsets.only(left: 10, right: 10),
                     child: Text(
@@ -185,10 +183,11 @@ class _SetupPinScreenState extends State<SetupPinScreen> {
                                         textAlign: TextAlign.center,
                                         keyboardType: TextInputType.number,
                                         obscureText: true,
+                                        obscuringCharacter: "●",
 
                                         style: const TextStyle(
                                           fontSize: 24,
-                                          fontWeight: FontWeight.bold,
+                                          fontFamily: "Alegreya_Sans",
                                         ),
 
                                         decoration: const InputDecoration(

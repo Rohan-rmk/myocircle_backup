@@ -112,7 +112,7 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                     child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.all(50),
+                          padding: const EdgeInsets.all(20),
                           child: const Text(
                             'PIN updated successfully',
                             style: TextStyle(
@@ -170,12 +170,13 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text(
-                            'Enter new PIN',
+                            'Confirm PIN',
                             style: TextStyle(
-                              fontFamily: "Alegreya_Sans",
-                              color: Colors.white,
-                              fontSize: 22,
-                              fontWeight: FontWeight.w400,
+                                fontFamily: "Alegreya_Sans",
+                                color: Colors.white,
+                                fontSize: 22,
+                                fontWeight: FontWeight.w700,
+
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -443,9 +444,7 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.only(left: 25),
-                    child: isLoading
-                        ? Center(child: CircularProgressIndicator())
-                        : ScaleButton(
+                    child: ScaleButton(
                             onTap: () async {
                               if (allowPin) {
                                 // Submit new PIN
@@ -462,9 +461,7 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                                   }
 
                                   if (allow) {
-                                    setState(() {
-                                      isLoading = true;
-                                    });
+                                    loadLoader: true;
 
                                     try {
                                       var setPinResponse =
@@ -486,10 +483,10 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                                         });
 
                                         // Automatically navigate back after 2 seconds
-                                        Future.delayed(Duration(seconds: 2),
-                                            () {
+                                        Future.delayed(Duration(seconds: 2), () {
                                           if (mounted) {
-                                            Navigator.pop(context);
+                                            Provider.of<IndexProvider>(context, listen: false)
+                                                .setIndex(PatientTab.home.index);
                                           }
                                         });
                                       } else {

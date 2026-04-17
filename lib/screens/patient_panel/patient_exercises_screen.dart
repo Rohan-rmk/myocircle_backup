@@ -99,6 +99,8 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
       mode: 2,
     );
 
+    print(response);
+
     if (mounted) {
       setState(() {
         exerciseData = response;
@@ -356,12 +358,32 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                         child: ScaleButton(
                           child: MaterialButton(
                             onPressed: () {
-                              print("Selected Exercise: $selectedExercise");
-                              Navigator.pushReplacement(
+                              int groupIndex = 0;
+                              int exerciseIndex = 0;
+
+                              bool found = false;
+
+                              for (int g = 0; g < exerciseGroups.length; g++) {
+                                final exercises = exerciseGroups[g]['exercises'] ?? [];
+
+                                for (int e = 0; e < exercises.length; e++) {
+                                  if (exercises[e]['isExerciseComplete'] == false) {
+                                    groupIndex = g;
+                                    exerciseIndex = e;
+                                    found = true;
+                                    break;
+                                  }
+                                }
+                                if (found) break;
+                              }
+
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => ExerciseViewScreen(
                                     exercises: exerciseGroups,
+                                    initialGroupIndex: groupIndex,
+                                    initialExerciseIndex: exerciseIndex,
                                   ),
                                 ),
                               );
@@ -478,7 +500,7 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
                             Container(
-                              padding: EdgeInsets.all(5),
+                              padding: EdgeInsets.all(4),
                               width: 120,
                               height: 88,
                               decoration: BoxDecoration(
@@ -527,7 +549,7 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                                         "MyoPoints",
                                         style: TextStyle(
                                             fontFamily: "Alegreya_Sans",
-                                            fontSize: 16),
+                                            fontSize: MediaQuery.of(context).size.width * 0.05),
                                       ),
                                     ),
                                   ),
@@ -535,7 +557,7 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                               ),
                             ),
                             Container(
-                              padding: EdgeInsets.all(5),
+                              padding: EdgeInsets.all(4),
                               width: 120,
                               height: 88,
                               decoration: BoxDecoration(
@@ -590,7 +612,7 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                                             "$progressPercent%",
                                             style: TextStyle(
                                               fontFamily: "Alegreya_Sans",
-                                              fontSize: 20,
+                                              fontSize: MediaQuery.of(context).size.width * 0.053,
                                               color: Color(0xff3197DB),
                                               fontWeight: FontWeight.bold,
                                             ),
@@ -604,7 +626,7 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                                         "Progress",
                                         style: TextStyle(
                                             fontFamily: "Alegreya_Sans",
-                                            fontSize: 16),
+                                            fontSize: MediaQuery.of(context).size.width * 0.047),
                                       ),
                                     ),
                                   ),
@@ -652,15 +674,19 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                               ),
                             ),
                           ),
-                        ) else
+                        )
+
+                      else
                       // Loop through exercise groups
+
+
                       for (var groupIndex = 0; groupIndex < exerciseGroups.length; groupIndex++) ...[
 
                         Text(
                           "SET ${exerciseGroups[groupIndex]['exerciseGroupID']}",
                           style: TextStyle(
                               // fontFamily: "Alegreya_Sans",
-                              fontSize: MediaQuery.of(context).size.height * 0.025,
+                              fontSize: MediaQuery.of(context).size.height * 0.02,
                               fontWeight: FontWeight.w500),
                         ),
 
@@ -681,15 +707,6 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                             bool isLockExercise = false;
 
                             if (isParent) {
-                              print(isParent);
-                              print(isParent);
-                              print(isParent);
-                              print(isParent);
-                              print(isParent);
-                              print(isParent);
-                              print(isParent);
-                              print(isParent);
-                              print(isParent);
                               print(isParent);
                               // Parent sees GO everywhere
                               isGoExercise = true;
@@ -719,6 +736,8 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                                     MaterialPageRoute(
                                       builder: (_) => ExerciseViewScreen(
                                         exercises: exerciseGroups,
+                                        initialGroupIndex: groupIndex,
+                                        initialExerciseIndex: exerciseIndex,
                                       ),
                                     ),
                                   );
@@ -808,7 +827,7 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                                                             textAlign: TextAlign
                                                                 .center,
                                                             style: TextStyle(
-                                                              fontSize: 16,
+                                                              fontSize: MediaQuery.of(context).size.width * 0.046,
                                                               fontFamily:
                                                                   "Alegreya_Sans",
                                                             ),

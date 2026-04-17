@@ -1,8 +1,8 @@
 import 'dart:io';
 // import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:media_kit/media_kit.dart';
 import 'package:myocircle15screens/providers/avatar_provider.dart';
 import 'package:myocircle15screens/providers/first_time_user_provider.dart';
 import 'package:myocircle15screens/providers/index_provider.dart';
@@ -42,9 +42,10 @@ Future<void> main() async {
       MyHttpOverrides(); // Disabling SSL verification for dev
 
   WidgetsFlutterBinding.ensureInitialized();
-  MediaKit.ensureInitialized();
-  // await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  // await NotificationManager.initialize();
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp();
+  }
+  await NotificationManager.initialize();
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,

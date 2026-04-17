@@ -324,10 +324,7 @@ class _PatientSurveyScreenState extends State<PatientSurveyScreen> {
   Widget _buildHeader() {
     return Row(
       children: [
-        IconButton(
-          icon: const Icon(Icons.arrow_back, color: textColor),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        
         const SizedBox(width: 8),
         Text(
           'Patient Questionnaire',

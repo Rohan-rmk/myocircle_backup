@@ -21,6 +21,8 @@ class _MyTherapistScreenState extends State<MyTherapistScreen> {
   Widget build(BuildContext context) {
     final session = Provider.of<SessionProvider>(context, listen: false);
     final userData = session.userData;
+    debugPrint("Therapist Info: ${userData?['therapistInfo']}");
+    final mobileNo = userData?["therapistInfo"]["phoneNumber"];
     final therapistName = userData?['therapistInfo']['firstName'] +
         ' ' +
         userData?['therapistInfo']['lastName'];
@@ -158,41 +160,17 @@ class _MyTherapistScreenState extends State<MyTherapistScreen> {
                               ))
                             ],
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                  child: Text(
-                                "Irvine Dental Associates",
-                                textAlign: TextAlign.center,
+                          SizedBox(height: 8),
+                          Text(
+                            "Email: $therapistEmail",
+                            style: TextStyle(
+                                fontFamily: "Alegreya_Sans", fontSize: 20),
+                          ),
+                               Text(
+                                    "Phone No.: ${userData?["therapistInfo"]["phoneNumber"]}",
                                 style: TextStyle(
                                     fontFamily: "Alegreya_Sans", fontSize: 20),
-                              ))
-                            ],
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                  child: Text(
-                                "Address: $therapistAddress",
-                                style: TextStyle(
-                                    fontFamily: "Alegreya_Sans", fontSize: 20),
-                              ))
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Expanded(
-                                  child: Text(
-                                "Email: $therapistEmail",
-                                style: TextStyle(
-                                    fontFamily: "Alegreya_Sans", fontSize: 20),
-                              ))
-                            ],
-                          ),
+                              ),
                         ],
                       ),
                     ),

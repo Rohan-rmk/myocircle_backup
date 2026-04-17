@@ -18,8 +18,21 @@ class SessionProvider with ChangeNotifier {
   bool? get isPatient => _isPatient;
   bool get showPopup => _showPopup;
 
+  String? _phoneNumber;
+  String? get phoneNumber => _phoneNumber;
+
   String? _profileName;
   String? get profileName => _profileName;
+
+  Future<void> setPhoneNumber(String phone) async {
+    _phoneNumber = phone;
+    notifyListeners();
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('phoneNumber', phone);
+
+    debugPrint("📱 PhoneNumber saved: $phone");
+  }
 
   void setUserData(Map<String, dynamic> data, String uniqueId, int pin) {
     _userData = data;
@@ -92,6 +105,7 @@ class SessionProvider with ChangeNotifier {
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('selectedProfileId');
+    await prefs.remove('phoneNumber');
 
     notifyListeners();
   }
@@ -117,6 +131,7 @@ class SessionProvider with ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     _selectedProfileId = prefs.getInt('selectedProfileId');
     _profileName = prefs.getString('profileName');
+    _phoneNumber = prefs.getString('phoneNumber');
     notifyListeners();
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:in_app_update/in_app_update.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -119,26 +120,98 @@ class AppUpdateService {
   }
 
   /// 🔥 FORCE UPDATE DIALOG (COMMON FOR BOTH)
-  static void _showForceDialog(BuildContext context, String url) {
-    if (_isDialogShown) return;
-    _isDialogShown = true;
-
-    showCupertinoDialog(
+  // static void _showForceDialog(BuildContext context, String url) {
+  //   if (_isDialogShown) return;
+  //   _isDialogShown = true;
+  //
+  //   showCupertinoDialog(
+  //     context: context,
+  //     barrierDismissible: false,
+  //     builder: (_) => CupertinoAlertDialog(
+  //       title: const Text("Update Required"),
+  //       content: const Text("Please update the app to continue"),
+  //       actions: [
+  //         CupertinoDialogAction(
+  //           isDefaultAction: true,
+  //           onPressed: () async {
+  //             await launchUrl(Uri.parse(url));
+  //           },
+  //           child: const Text("Update"),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+///
+  static Future<void> _showForceDialog(BuildContext context, String url) async {
+    await showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => CupertinoAlertDialog(
-        title: const Text("Update Required"),
-        content: const Text("Please update the app to continue"),
-        actions: [
-          CupertinoDialogAction(
-            isDefaultAction: true,
-            onPressed: () async {
-              await launchUrl(Uri.parse(url));
-            },
-            child: const Text("Update"),
+      barrierColor: Colors.black54,
+      builder: (_) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-        ],
-      ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 🔥 Title
+                const Text(
+                  "New Version Available",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // 🔥 Description
+                const Text(
+                  "There is a new version of the app available, please upgrade to continue using the app.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.black54,
+                  ),
+                ),
+
+                const SizedBox(height: 24),
+
+                // 🔥 Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      await launchUrl(Uri.parse(url));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF3E52A8),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                    child: const Text(
+                      "OK",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
+///
 }

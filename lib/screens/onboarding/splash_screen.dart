@@ -92,16 +92,15 @@ class _SplashScreenState extends State<SplashScreen> {
     });
   }
 
-  /// 🔥 MAIN FLOW
+
   Future<void> _initApp() async {
     await Future.delayed(const Duration(seconds: 2));
 
     /// 🔥 STEP 1: FORCE UPDATE CHECK
     bool canContinue = await AppUpdateService.checkForUpdate(context);
 
-    if (!canContinue) return; // ❌ BLOCK APP
+    if (!canContinue) return;
 
-    /// 🔥 STEP 2: NAVIGATE
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (_) => const BridgeScreen()),
@@ -111,7 +110,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return WillPopScope(
-      onWillPop: () async => false, // 🚫 block back
+      onWillPop: () async => false,
       child: Scaffold(
         backgroundColor: const Color(0xfff5f5f5),
         body: SafeArea(

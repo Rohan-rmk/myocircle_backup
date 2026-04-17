@@ -408,24 +408,41 @@ class _DashboardAccordionState extends State<DashboardAccordion> {
                     color: const Color(0xff387AED),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  child: Stack(
+                    alignment: Alignment.center,
                     children: [
-                      Text(
-                        "${widget.progress}%",
-                        style: const TextStyle(
-                          fontSize: 28,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
+                      SizedBox(
+                        height: 90,
+                        width: 90,
+                        child: CircularProgressIndicator(
+                          value: widget.progress / 100, // convert % to 0–1
+                          strokeWidth: 8,
+                          backgroundColor: Colors.white24,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       ),
-                      const SizedBox(height: 6),
-                      const Text(
-                        "Progress",
-                        style: TextStyle(color: Colors.white),
+
+                      // 🔹 Center Text
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            "${widget.progress}%",
+                            style: const TextStyle(
+                              fontSize: 22,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          const Text(
+                            "Progress",
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
+                  )
                 ),
               ),
             ],
