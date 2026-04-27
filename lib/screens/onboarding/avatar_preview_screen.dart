@@ -1064,8 +1064,9 @@ class _AvatarPreviewScreenState extends State<AvatarPreviewScreen> {
     final controller = BetterPlayerController(
       BetterPlayerConfiguration(
         autoPlay: false,
-        fit: BoxFit.contain, // ✅ IMPORTANT
-        expandToFill: false, // ✅ IMPORTANT
+        looping: true,
+        fit: BoxFit.contain,
+        expandToFill: false,
         controlsConfiguration: const BetterPlayerControlsConfiguration(
           showControls: false,
         ),

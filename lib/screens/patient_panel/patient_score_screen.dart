@@ -335,12 +335,15 @@ class _PatientScoreScreenState extends State<PatientScoreScreen> {
                         decoration: BoxDecoration(
                             image: DecorationImage(
                                 image: AssetImage(AVATAR_CONTAINER_INNER))),
-                        child: ClipRRect(
-                            borderRadius: BorderRadius.circular(50),
-                            child: Base64ImageWidget(
-                                key: UniqueKey(),
-                                base64String:
-                                    landingPageData?['patientAvatarURL']))),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 7.0),
+                          child: ClipRRect(
+                              borderRadius: BorderRadius.circular(50),
+                              child: Base64ImageWidget(
+                                  key: UniqueKey(),
+                                  base64String:
+                                      landingPageData?['patientAvatarURL'])),
+                        )),
                   ),
                   Image.asset(AVATAR_CONTAINER_OUTER),
                 ],
@@ -442,27 +445,20 @@ class _PatientScoreScreenState extends State<PatientScoreScreen> {
                                           child: Container(
                                               decoration: BoxDecoration(
                                                   image: DecorationImage(
-                                                      image: AssetImage(
-                                                          EXERCISE_AVATAR_FRAME_IN),
+                                                      image: AssetImage(EXERCISE_AVATAR_FRAME_IN),
                                                       fit: BoxFit.fill)),
                                               child: AspectRatio(
                                                 aspectRatio: 1,
                                                 child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          bottom: 10),
+                                                  padding: const EdgeInsets.only(bottom: 10,left: 6),
                                                   child: ClipRRect(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              50),
+                                                      borderRadius: BorderRadius.circular(50),
                                                       child: Base64ImageWidget(
-                                                          base64String:
-                                                              leaderboardData[
-                                                                      index][
-                                                                  'avatarImg'])),
+                                                          base64String: leaderboardData[index]['avatarImg'])),
                                                 ),
                                               )),
                                         ),
+
                                         Image.asset(EXERCISE_AVATAR_FRAME_OUT),
                                       ],
                                     )
@@ -481,7 +477,7 @@ class _PatientScoreScreenState extends State<PatientScoreScreen> {
                                               aspectRatio: 1,
                                               child: Padding(
                                                 padding: const EdgeInsets.only(
-                                                    bottom: 10),
+                                                    bottom: 10,left: 6),
                                                 child: ClipRRect(
                                                     borderRadius:
                                                         BorderRadius.circular(

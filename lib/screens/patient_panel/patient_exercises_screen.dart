@@ -492,150 +492,324 @@ class _PatientExercisesScreenState extends State<PatientExercisesScreen> {
                           ],
                         ),
                       ),
+                      // Container(
+                      //   padding: EdgeInsets.symmetric(vertical: 10),
+                      //   height: 128,
+                      //   width: double.infinity,
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      //     children: [
+                      //       Container(
+                      //         padding: EdgeInsets.all(4),
+                      //         width: 120,
+                      //         height: 88,
+                      //         decoration: BoxDecoration(
+                      //           color: Colors.white,
+                      //           borderRadius: BorderRadius.circular(
+                      //             8,
+                      //           ),
+                      //           border: Border(
+                      //             left: BorderSide(
+                      //               color: Color(0xff1F8C85),
+                      //               width: 5,
+                      //             ),
+                      //           ),
+                      //           boxShadow: [
+                      //             BoxShadow(
+                      //               color: Colors.black.withOpacity(
+                      //                 .5,
+                      //               ),
+                      //               blurRadius: 4.0,
+                      //               spreadRadius: 1.0,
+                      //               offset: Offset(0.0, 2.0),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //         alignment: Alignment.center,
+                      //         child: Column(
+                      //           children: [
+                      //             Expanded(
+                      //               flex: 3,
+                      //               child: Center(
+                      //                 child: Text(
+                      //                   "$myoPoints",
+                      //                   style: TextStyle(
+                      //                     fontFamily: "Alegreya_Sans",
+                      //                     fontSize: 20,
+                      //                     color: Color(0xff1F8C85),
+                      //                     fontWeight: FontWeight.bold,
+                      //                   ),
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //             Expanded(
+                      //               flex: 1,
+                      //               child: Center(
+                      //                 child: Text(
+                      //                   "MyoPoints",
+                      //                   style: TextStyle(
+                      //                       fontFamily: "Alegreya_Sans",
+                      //                       fontSize: MediaQuery.of(context).size.width * 0.05),
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //       Container(
+                      //         padding: EdgeInsets.all(4),
+                      //         width: 120,
+                      //         height: 88,
+                      //         decoration: BoxDecoration(
+                      //           color: Colors.white,
+                      //           borderRadius: BorderRadius.circular(
+                      //             8,
+                      //           ),
+                      //           border: Border(
+                      //             left: BorderSide(
+                      //               color: Color(0xff3197DB),
+                      //               width: 5,
+                      //             ),
+                      //           ),
+                      //           boxShadow: [
+                      //             BoxShadow(
+                      //               color: Colors.black.withOpacity(
+                      //                 .5,
+                      //               ),
+                      //               blurRadius: 4.0,
+                      //               spreadRadius: 1.0,
+                      //               offset: Offset(0.0, 2.0),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //         alignment: Alignment.center,
+                      //         child: Column(
+                      //           children: [
+                      //             Expanded(
+                      //                 flex: 3,
+                      //                 child: Stack(
+                      //                   alignment: Alignment.center,
+                      //                   children: [
+                      //                     SizedBox(
+                      //                       height: (progressPercent < 100)
+                      //                           ? 60
+                      //                           : 65,
+                      //                       width: (progressPercent < 100)
+                      //                           ? 60
+                      //                           : 65,
+                      //                       child:
+                      //                           GradientCircularProgressIndicator(
+                      //                         value: progressPercent / 100,
+                      //                         parentSize: height / 1.4,
+                      //                         colors: [
+                      //                           Color(0xff3197DB),
+                      //                           Color(0xff3197DB),
+                      //                           Color(0xff3197DB),
+                      //                         ],
+                      //                       ),
+                      //                     ),
+                      //                     Text(
+                      //                       "$progressPercent%",
+                      //                       style: TextStyle(
+                      //                         fontFamily: "Alegreya_Sans",
+                      //                         fontSize: MediaQuery.of(context).size.width * 0.053,
+                      //                         color: Color(0xff3197DB),
+                      //                         fontWeight: FontWeight.bold,
+                      //                       ),
+                      //                     ),
+                      //                   ],
+                      //                 )),
+                      //             Expanded(
+                      //               flex: 1,
+                      //               child: Center(
+                      //                 child: Text(
+                      //                   "Progress",
+                      //                   style: TextStyle(
+                      //                       fontFamily: "Alegreya_Sans",
+                      //                       fontSize: MediaQuery.of(context).size.width * 0.047),
+                      //                 ),
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+                      ///
                       Container(
-                        padding: EdgeInsets.symmetric(vertical: 10),
-                        height: 128,
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 14),
                         width: double.infinity,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(4),
-                              width: 120,
-                              height: 88,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(
-                                  8,
-                                ),
-                                border: Border(
-                                  left: BorderSide(
-                                    color: Color(0xff1F8C85),
-                                    width: 5,
-                                  ),
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(
-                                      .5,
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final size = MediaQuery.of(context).size;
+                            final isTablet = size.width > 600;
+
+                            final cardWidth =
+                            isTablet ? constraints.maxWidth * 0.42 : constraints.maxWidth * 0.46;
+
+                            final cardHeight = isTablet ? 130.0 : 105.0;
+
+                            final valueFont = isTablet ? 34.0 : 22.0;
+                            final labelFont = isTablet ? 24.0 : 18.0;
+
+                            final progressCircle = isTablet ? 74.0 : 56.0;
+                            final percentFont = isTablet ? 22.0 : 16.0;
+
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                /// 🔥 MYOPOINTS
+                                Container(
+                                  width: cardWidth,
+                                  height: cardHeight,
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: const Border(
+                                      left: BorderSide(
+                                        color: Color(0xff1F8C85),
+                                        width: 5,
+                                      ),
                                     ),
-                                    blurRadius: 4.0,
-                                    spreadRadius: 1.0,
-                                    offset: Offset(0.0, 2.0),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(.18),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                              alignment: Alignment.center,
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: Center(
-                                      child: Text(
+                                  child: Column(
+                                    children: [
+                                      const Spacer(),
+
+                                      Text(
                                         "$myoPoints",
                                         style: TextStyle(
                                           fontFamily: "Alegreya_Sans",
-                                          fontSize: 20,
-                                          color: Color(0xff1F8C85),
+                                          fontSize: valueFont,
+                                          color: const Color(0xff1F8C85),
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Center(
-                                      child: Text(
+
+                                      const Spacer(),
+
+                                      Text(
                                         "MyoPoints",
+                                        textAlign: TextAlign.center,
                                         style: TextStyle(
-                                            fontFamily: "Alegreya_Sans",
-                                            fontSize: MediaQuery.of(context).size.width * 0.05),
+                                          fontFamily: "Alegreya_Sans",
+                                          fontSize: labelFont,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 4),
+                                    ],
+                                  ),
+                                ),
+
+                                /// 🔥 PROGRESS
+                                Container(
+                                  width: cardWidth,
+                                  height: cardHeight,
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(14),
+                                    border: const Border(
+                                      left: BorderSide(
+                                        color: Color(0xff3197DB),
+                                        width: 5,
                                       ),
                                     ),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(.18),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.all(4),
-                              width: 120,
-                              height: 88,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(
-                                  8,
-                                ),
-                                border: Border(
-                                  left: BorderSide(
-                                    color: Color(0xff3197DB),
-                                    width: 5,
-                                  ),
-                                ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(
-                                      .5,
-                                    ),
-                                    blurRadius: 4.0,
-                                    spreadRadius: 1.0,
-                                    offset: Offset(0.0, 2.0),
-                                  ),
-                                ],
-                              ),
-                              alignment: Alignment.center,
-                              child: Column(
-                                children: [
-                                  Expanded(
-                                      flex: 3,
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          SizedBox(
-                                            height: (progressPercent < 100)
-                                                ? 60
-                                                : 65,
-                                            width: (progressPercent < 100)
-                                                ? 60
-                                                : 65,
-                                            child:
-                                                GradientCircularProgressIndicator(
+                                  child: Column(
+                                    children: [
+                                      const Spacer(),
+
+                                      SizedBox(
+                                        height: progressCircle,
+                                        width: progressCircle,
+                                        child: Stack(
+                                          alignment: Alignment.center,
+                                          children: [
+                                            /// Fat background ring
+                                            Container(
+                                              height: progressCircle,
+                                              width: progressCircle,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+
+                                              ),
+                                            ),
+
+                                            /// Progress ring
+                                            GradientCircularProgressIndicator(
                                               value: progressPercent / 100,
-                                              parentSize: height / 1.4,
-                                              colors: [
-                                                Color(0xff3197DB),
-                                                Color(0xff3197DB),
-                                                Color(0xff3197DB),
+                                              parentSize: 400,
+                                              colors: const [
+                                                Color(0xff1565C0),
+                                                Color(0xff1E88E5),
+                                                Color(0xff64B5F6),
                                               ],
                                             ),
-                                          ),
-                                          Text(
-                                            "$progressPercent%",
-                                            style: TextStyle(
-                                              fontFamily: "Alegreya_Sans",
-                                              fontSize: MediaQuery.of(context).size.width * 0.053,
-                                              color: Color(0xff3197DB),
-                                              fontWeight: FontWeight.bold,
+
+                                            /// Inner hole = fat stroke look
+                                            Container(
+                                              height: progressCircle * 0.38,
+                                              width: progressCircle * 0.38,
+                                              decoration: const BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                color: Colors.white,
+                                              ),
                                             ),
-                                          ),
-                                        ],
-                                      )),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Center(
-                                      child: Text(
-                                        "Progress",
-                                        style: TextStyle(
-                                            fontFamily: "Alegreya_Sans",
-                                            fontSize: MediaQuery.of(context).size.width * 0.047),
+
+                                            Text(
+                                              "$progressPercent%",
+                                              style: TextStyle(
+                                                fontFamily: "Alegreya_Sans",
+                                                fontSize: percentFont,
+                                                color: const Color(0xff1565C0),
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
+
+                                      const Spacer(),
+
+                                      Text(
+                                        "Progress",
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                          fontFamily: "Alegreya_Sans",
+                                          fontSize: labelFont,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+
+                                      const SizedBox(height: 4),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                          ],
+                                ),
+                              ],
+                            );
+                          },
                         ),
                       ),
+                      ///
                       // Display day information if available
                       exerciseDays.isNotEmpty &&
                               exerciseDays[0]['originalExerciseDate'] != null

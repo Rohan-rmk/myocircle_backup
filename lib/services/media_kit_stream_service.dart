@@ -224,7 +224,7 @@ class _GemVideoPlayerScreenState extends State<GemVideoPlayerScreen> {
     _controller = BetterPlayerController(
       BetterPlayerConfiguration(
         autoPlay: false,
-
+        looping: true,
         fit: BoxFit.contain,
         expandToFill: false,
 

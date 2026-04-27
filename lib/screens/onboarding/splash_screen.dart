@@ -96,7 +96,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Future<void> _initApp() async {
     await Future.delayed(const Duration(seconds: 2));
 
-    /// 🔥 STEP 1: FORCE UPDATE CHECK
+    /// FORCE UPDATE CHECK
     bool canContinue = await AppUpdateService.checkForUpdate(context);
 
     if (!canContinue) return;

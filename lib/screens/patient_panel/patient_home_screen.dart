@@ -981,260 +981,495 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                                 flex: 3,
                                 child: Column(
                                   children: [
+                                    // Expanded(
+                                    //   flex: 1,
+                                    //   child: Padding(
+                                    //     padding: EdgeInsets.all(10),
+                                    //     child: Container(
+                                    //       decoration: BoxDecoration(
+                                    //           shape: BoxShape.circle,
+                                    //           boxShadow: [
+                                    //             BoxShadow(
+                                    //               color: Colors.black54,
+                                    //               blurRadius: 7,
+                                    //               spreadRadius: 1,
+                                    //               offset: Offset(-2, 4),
+                                    //             )
+                                    //           ]),
+                                    //       child: Stack(
+                                    //         alignment: Alignment.center,
+                                    //         children: [
+                                    //           Padding(
+                                    //             padding:
+                                    //                 const EdgeInsets.all(8.0),
+                                    //             // child: Container(
+                                    //             //   height: 58,
+                                    //             //   width: 58,
+                                    //             //     decoration: BoxDecoration(
+                                    //             //         image: DecorationImage(
+                                    //             //             image: AssetImage(
+                                    //             //                 AVATAR_CONTAINER_INNER))),
+                                    //             //     child: Skeletonizer(
+                                    //             //       enabled:
+                                    //             //           landingPageData ==
+                                    //             //               null,
+                                    //             //       child: ClipRRect(
+                                    //             //           borderRadius:
+                                    //             //               BorderRadius
+                                    //             //                   .circular(
+                                    //             //                       100),
+                                    //             //           child: landingPageData ==
+                                    //             //                       null ||
+                                    //             //                   landingPageData[
+                                    //             //                           'patientAvatarURL'] ==
+                                    //             //                       null
+                                    //             //               ? AspectRatio(
+                                    //             //                   aspectRatio:
+                                    //             //                       2 / 2,
+                                    //             //                   child: displayBase64Image(
+                                    //             //                       defaultBase64))
+                                    //             //               : Base64ImageWidget(
+                                    //             //                   key: UniqueKey(),
+                                    //             //                   base64String: landingPageData['patientAvatarURL'])),
+                                    //             //     )),
+                                    //             ///
+                                    //             child: Stack(
+                                    //               alignment: Alignment.center,
+                                    //               children: [
+                                    //
+                                    //                 /// 🔥 INNER BACKGROUND (BOTTOM)
+                                    //                 Container(
+                                    //                   height: 75,
+                                    //                   width: 75,
+                                    //                   decoration: BoxDecoration(
+                                    //                     shape: BoxShape.circle,
+                                    //                     image: DecorationImage(
+                                    //                       image: AssetImage(AVATAR_CONTAINER_INNER),
+                                    //                       fit: BoxFit.cover,
+                                    //                     ),
+                                    //                   ),
+                                    //                 ),
+                                    //
+                                    //                 /// 🔥 USER IMAGE (MIDDLE)
+                                    //                 ClipOval(
+                                    //                   child: SizedBox(
+                                    //                     height: 65,
+                                    //                     width: 65,
+                                    //                     child: landingPageData == null ||
+                                    //                         landingPageData['patientAvatarURL'] == null
+                                    //                         ? Image.memory(
+                                    //                       base64Decode(defaultBase64),
+                                    //                       fit: BoxFit.cover,
+                                    //                     )
+                                    //                         : Image.memory(
+                                    //                       base64Decode(
+                                    //                           landingPageData['patientAvatarURL']),
+                                    //                       fit: BoxFit.cover,
+                                    //                     ),
+                                    //                   ),
+                                    //                 ),
+                                    //
+                                    //
+                                    //               ],
+                                    //             )
+                                    //             ///
+                                    //           ),
+                                    //           Image.asset(
+                                    //               AVATAR_CONTAINER_OUTER),
+                                    //         ],
+                                    //       ),
+                                    //     ),
+                                    //   ),
+                                    // ),
                                     Expanded(
                                       flex: 1,
                                       child: Padding(
-                                        padding: EdgeInsets.all(10),
+                                        padding: const EdgeInsets.all(10),
                                         child: Container(
                                           decoration: BoxDecoration(
-                                              shape: BoxShape.circle,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.black54,
-                                                  blurRadius: 7,
-                                                  spreadRadius: 1,
-                                                  offset: Offset(-2, 4),
-                                                )
-                                              ]),
+                                            shape: BoxShape.circle,
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: Colors.black54,
+                                                blurRadius: 7,
+                                                spreadRadius: 1,
+                                                offset: Offset(-2, 4),
+                                              )
+                                            ],
+                                          ),
                                           child: Stack(
                                             alignment: Alignment.center,
                                             children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.all(8.0),
-                                                // child: Container(
-                                                //   height: 58,
-                                                //   width: 58,
-                                                //     decoration: BoxDecoration(
-                                                //         image: DecorationImage(
-                                                //             image: AssetImage(
-                                                //                 AVATAR_CONTAINER_INNER))),
-                                                //     child: Skeletonizer(
-                                                //       enabled:
-                                                //           landingPageData ==
-                                                //               null,
-                                                //       child: ClipRRect(
-                                                //           borderRadius:
-                                                //               BorderRadius
-                                                //                   .circular(
-                                                //                       100),
-                                                //           child: landingPageData ==
-                                                //                       null ||
-                                                //                   landingPageData[
-                                                //                           'patientAvatarURL'] ==
-                                                //                       null
-                                                //               ? AspectRatio(
-                                                //                   aspectRatio:
-                                                //                       2 / 2,
-                                                //                   child: displayBase64Image(
-                                                //                       defaultBase64))
-                                                //               : Base64ImageWidget(
-                                                //                   key: UniqueKey(),
-                                                //                   base64String: landingPageData['patientAvatarURL'])),
-                                                //     )),
-                                                ///
-                                                child: Stack(
-                                                  alignment: Alignment.center,
-                                                  children: [
-
-                                                    /// 🔥 INNER BACKGROUND (BOTTOM)
-                                                    Container(
-                                                      height: 75,
-                                                      width: 75,
-                                                      decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        image: DecorationImage(
-                                                          image: AssetImage(AVATAR_CONTAINER_INNER),
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                    ),
-
-                                                    /// 🔥 USER IMAGE (MIDDLE)
-                                                    ClipOval(
-                                                      child: SizedBox(
-                                                        height: 65,
-                                                        width: 65,
-                                                        child: landingPageData == null ||
-                                                            landingPageData['patientAvatarURL'] == null
-                                                            ? Image.memory(
-                                                          base64Decode(defaultBase64),
-                                                          fit: BoxFit.cover,
-                                                        )
-                                                            : Image.memory(
-                                                          base64Decode(
-                                                              landingPageData['patientAvatarURL']),
-                                                          fit: BoxFit.cover,
-                                                        ),
-                                                      ),
-                                                    ),
-
-
-                                                  ],
-                                                )
-                                                ///
+                                              /// 🔥 INNER FRAME BACKGROUND
+                                              Container(
+                                                height: 100,
+                                                width: 100,
+                                                decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  image: DecorationImage(
+                                                    image: AssetImage(AVATAR_CONTAINER_INNER),
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
                                               ),
+
+
+                                              Padding(
+                                                padding: const EdgeInsets.only(left:5.0),
+                                                child: CircleAvatar(
+                                                  radius: 35,
+                                                  backgroundColor: Colors.transparent,
+                                                  backgroundImage: MemoryImage(
+                                                    base64Decode(
+                                                      landingPageData == null ||
+                                                          landingPageData['patientAvatarURL'] == null ||
+                                                          landingPageData['patientAvatarURL'].toString().isEmpty
+                                                          ? defaultBase64
+                                                          : landingPageData['patientAvatarURL'],
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+
+                                              /// 🔥 OUTER FRAME
                                               Image.asset(
-                                                  AVATAR_CONTAINER_OUTER),
+                                                AVATAR_CONTAINER_OUTER,
+                                                height: 110,
+                                                width: 110,
+                                                fit: BoxFit.contain,
+                                              ),
                                             ],
                                           ),
                                         ),
                                       ),
                                     ),
+                                    // Expanded(
+                                    //   flex: 1,
+                                    //   child: Padding(
+                                    //     padding: EdgeInsets.symmetric(
+                                    //       horizontal: 17.5,
+                                    //       vertical: 10,
+                                    //     ),
+                                    //     child: Row(
+                                    //       mainAxisAlignment: MainAxisAlignment.center,
+                                    //       children: [
+                                    //         Expanded(
+                                    //           flex: 1,
+                                    //           child: Container(
+                                    //             padding: EdgeInsets.all(2.5),
+                                    //             width: double.infinity,
+                                    //             decoration: BoxDecoration(
+                                    //               color: Colors.white,
+                                    //               borderRadius: BorderRadius.circular(8),
+                                    //               border: Border(
+                                    //                 left: BorderSide(
+                                    //                   color: Color(0xff1F8C85),
+                                    //                   width: 5,
+                                    //                 ),
+                                    //               ),
+                                    //               boxShadow: [
+                                    //                 BoxShadow(
+                                    //                   color: Colors.black.withOpacity(0.5),
+                                    //                   blurRadius: 4.0,
+                                    //                   spreadRadius: 1.0,
+                                    //                   offset: Offset(0.0, 2.0),
+                                    //                 ),
+                                    //               ],
+                                    //             ),
+                                    //             alignment: Alignment.center,
+                                    //             child: Column(
+                                    //               children: [
+                                    //                 Expanded(
+                                    //                   flex: 3,
+                                    //                   child: Center(
+                                    //                     child: Text(
+                                    //                       "${landingPageData?['score'] ?? 0}",
+                                    //                       style: TextStyle(
+                                    //                         fontFamily:
+                                    //                             "Alegreya_Sans",
+                                    //                         fontSize: MediaQuery.of(context).size.width * 0.06,
+                                    //                         color: Color(
+                                    //                             0xff1F8C85),
+                                    //                         fontWeight:
+                                    //                             FontWeight.bold,
+                                    //                       ),
+                                    //                     ),
+                                    //                   ),
+                                    //                 ),
+                                    //                 Expanded(
+                                    //                   flex: 1,
+                                    //                   child: Center(
+                                    //                     child: Text(
+                                    //                       "MyoPoints",
+                                    //                       style: TextStyle(
+                                    //                           fontFamily:
+                                    //                               "Alegreya_Sans",
+                                    //                           fontSize: MediaQuery.of(context).size.width * 0.046),
+                                    //                     ),
+                                    //                   ),
+                                    //                 ),
+                                    //               ],
+                                    //             ),
+                                    //           ),
+                                    //         ),
+                                    //         SizedBox(width: 12),
+                                    //         Expanded(
+                                    //           flex: 1,
+                                    //           child: Container(
+                                    //             padding: EdgeInsets.all(2.5),
+                                    //             width: double.infinity,
+                                    //             decoration: BoxDecoration(
+                                    //               color: Colors.white,
+                                    //               borderRadius:
+                                    //                   BorderRadius.circular(
+                                    //                 8,
+                                    //               ),
+                                    //               border: Border(
+                                    //                 left: BorderSide(
+                                    //                   color: Color(0xff3197DB),
+                                    //                   width: 5,
+                                    //                 ),
+                                    //               ),
+                                    //               boxShadow: [
+                                    //                 BoxShadow(
+                                    //                   color: Colors.black.withOpacity(.5),
+                                    //                   blurRadius: 4.0,
+                                    //                   spreadRadius: 1.0,
+                                    //                   offset: Offset(0.0, 2.0),
+                                    //                 ),
+                                    //               ],
+                                    //             ),
+                                    //             alignment: Alignment.center,
+                                    //             child: Column(
+                                    //               children: [
+                                    //                 Expanded(
+                                    //                     flex: 3,
+                                    //                     child: Stack(
+                                    //                       alignment: Alignment.center,
+                                    //                       children: [
+                                    //                         SizedBox(
+                                    //                           height: (progress < 100) ? 60 : 65,
+                                    //                           width: (progress < 100) ? 60 : 65,
+                                    //                           child: GradientCircularProgressIndicator(
+                                    //                             value: progress / 100,
+                                    //                             parentSize: height / 1.4,
+                                    //                             colors: [
+                                    //                               Color(0xff3197DB),
+                                    //                               Color(0xff3197DB),
+                                    //                               Color(0xff3197DB),
+                                    //                             ],
+                                    //                           ),
+                                    //                         ),
+                                    //                         Text(
+                                    //                           "$progress%",
+                                    //                           style: TextStyle(
+                                    //                             fontFamily: "Alegreya_Sans",
+                                    //                             fontSize: MediaQuery.of(context).size.width * 0.046,
+                                    //                             color: Color(0xff3197DB),
+                                    //                             fontWeight: FontWeight.bold,
+                                    //                           ),
+                                    //                         ),
+                                    //                       ],
+                                    //                     )),
+                                    //                 Expanded(
+                                    //                   flex: 1,
+                                    //                   child: Center(
+                                    //                     child: Text(
+                                    //                       "Progress",
+                                    //                       style: TextStyle(
+                                    //                           fontFamily: "Alegreya_Sans",
+                                    //                           fontSize: MediaQuery.of(context).size.width * 0.045),
+                                    //                     ),
+                                    //                   ),
+                                    //                 ),
+                                    //               ],
+                                    //             ),
+                                    //           ),
+                                    //         ),
+                                    //       ],
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    ///
                                     Expanded(
-                                      flex: 1,
                                       child: Padding(
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: 17.5,
-                                          vertical: 10,
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Expanded(
-                                              flex: 1,
-                                              child: Container(
-                                                padding: EdgeInsets.all(2.5),
-                                                width: double.infinity,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                    8,
-                                                  ),
-                                                  border: Border(
-                                                    left: BorderSide(
-                                                      color: Color(0xff1F8C85),
-                                                      width: 5,
+                                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                                        child: Builder(
+                                          builder: (context) {
+                                            final size = MediaQuery.of(context).size;
+                                            final isTablet = size.width > 600;
+
+                                            final cardHeight =
+                                            isTablet ? size.height * 0.16 : size.height * 0.13;
+
+                                            final valueFont =
+                                            isTablet ? size.width * 0.052 : size.width * 0.060;
+
+                                            final labelFont =
+                                            isTablet ? size.width * 0.032 : size.width * 0.035;
+
+                                            final progressSize =
+                                            isTablet ? size.width * 0.099 : size.width * 0.12;
+
+                                            return Row(
+                                              children: [
+                                                /// 🔥 MYOPOINTS CARD
+                                                Expanded(
+                                                  child: Container(
+                                                    height: cardHeight,
+                                                    padding: const EdgeInsets.symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 10,
                                                     ),
-                                                  ),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.black
-                                                          .withOpacity(
-                                                        .5,
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius: BorderRadius.circular(16),
+                                                      border: const Border(
+                                                        left: BorderSide(
+                                                          color: Color(0xff1F8C85),
+                                                          width: 5,
+                                                        ),
                                                       ),
-                                                      blurRadius: 4.0,
-                                                      spreadRadius: 1.0,
-                                                      offset: Offset(0.0, 2.0),
+                                                      boxShadow: const [
+                                                        BoxShadow(
+                                                          color: Colors.black12,
+                                                          blurRadius: 8,
+                                                          offset: Offset(0, 3),
+                                                        ),
+                                                      ],
                                                     ),
-                                                  ],
-                                                ),
-                                                alignment: Alignment.center,
-                                                child: Column(
-                                                  children: [
-                                                    Expanded(
-                                                      flex: 3,
-                                                      child: Center(
-                                                        child: Text(
+                                                    child: Column(
+                                                      children: [
+                                                        const Spacer(),
+
+                                                        /// VALUE
+                                                        Text(
                                                           "${landingPageData?['score'] ?? 0}",
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(
-                                                            fontFamily:
-                                                                "Alegreya_Sans",
-                                                            fontSize: MediaQuery.of(context).size.width * 0.06,
-                                                            color: Color(
-                                                                0xff1F8C85),
-                                                            fontWeight:
-                                                                FontWeight.bold,
+                                                            fontFamily: "Alegreya_Sans",
+                                                            fontSize: valueFont,
+                                                            fontWeight: FontWeight.bold,
+                                                            color: const Color(0xff1F8C85),
                                                           ),
                                                         ),
-                                                      ),
-                                                    ),
-                                                    Expanded(
-                                                      flex: 1,
-                                                      child: Center(
-                                                        child: Text(
+
+                                                        const Spacer(),
+
+                                                        /// LABEL SAME ALIGNMENT
+                                                        Text(
                                                           "MyoPoints",
+                                                          textAlign: TextAlign.center,
                                                           style: TextStyle(
-                                                              fontFamily:
-                                                                  "Alegreya_Sans",
-                                                              fontSize: MediaQuery.of(context).size.width * 0.046),
+                                                            fontFamily: "Alegreya_Sans",
+                                                            fontSize: labelFont,
+                                                            fontWeight: FontWeight.w600,
+                                                            color: Colors.black87,
+                                                          ),
+                                                        ),
+
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+
+                                                SizedBox(width: size.width * 0.03),
+
+                                                /// 🔥 PROGRESS CARD
+                                                Expanded(
+                                                  child: Container(
+                                                    height: cardHeight,
+                                                    padding: const EdgeInsets.symmetric(
+                                                      horizontal: 10,
+                                                      vertical: 10,
+                                                    ),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius: BorderRadius.circular(16),
+                                                      border: const Border(
+                                                        left: BorderSide(
+                                                          color: Color(0xff3197DB),
+                                                          width: 5,
                                                         ),
                                                       ),
+                                                      boxShadow: const [
+                                                        BoxShadow(
+                                                          color: Colors.black12,
+                                                          blurRadius: 8,
+                                                          offset: Offset(0, 3),
+                                                        ),
+                                                      ],
                                                     ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ),
-                                            SizedBox(width: 12),
-                                            Expanded(
-                                              flex: 1,
-                                              child: Container(
-                                                padding: EdgeInsets.all(2.5),
-                                                width: double.infinity,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                    8,
-                                                  ),
-                                                  border: Border(
-                                                    left: BorderSide(
-                                                      color: Color(0xff3197DB),
-                                                      width: 5,
-                                                    ),
-                                                  ),
-                                                  boxShadow: [
-                                                    BoxShadow(
-                                                      color: Colors.black.withOpacity(.5),
-                                                      blurRadius: 4.0,
-                                                      spreadRadius: 1.0,
-                                                      offset: Offset(0.0, 2.0),
-                                                    ),
-                                                  ],
-                                                ),
-                                                alignment: Alignment.center,
-                                                child: Column(
-                                                  children: [
-                                                    Expanded(
-                                                        flex: 3,
-                                                        child: Stack(
-                                                          alignment: Alignment.center,
-                                                          children: [
-                                                            SizedBox(
-                                                              height: (progress < 100) ? 60 : 65,
-                                                              width: (progress < 100) ? 60 : 65,
-                                                              child: GradientCircularProgressIndicator(
+                                                    child: Column(
+                                                      children: [
+                                                        const Spacer(),
+
+                                                        /// PROGRESS RING
+                                                        SizedBox(
+                                                          height: progressSize,
+                                                          width: progressSize,
+                                                          child: Stack(
+                                                            alignment: Alignment.center,
+                                                            children: [
+
+                                                              GradientCircularProgressIndicator(
                                                                 value: progress / 100,
-                                                                parentSize: height / 1.4,
-                                                                colors: [
-                                                                  Color(0xff3197DB),
-                                                                  Color(0xff3197DB),
-                                                                  Color(0xff3197DB),
+                                                                parentSize: 400,
+                                                                colors: const [
+                                                                  Color(0xff1565C0),
+                                                                  Color(0xff1E88E5),
+                                                                  Color(0xff64B5F6),
                                                                 ],
                                                               ),
-                                                            ),
-                                                            Text(
-                                                              "$progress%",
-                                                              style: TextStyle(
-                                                                fontFamily: "Alegreya_Sans",
-                                                                fontSize: MediaQuery.of(context).size.width * 0.046,
-                                                                color: Color(0xff3197DB),
-                                                                fontWeight: FontWeight.bold,
+
+                                                              /// thicker look
+                                                              Container(
+                                                                height: progressSize * 0.62,
+                                                                width: progressSize * 0.62,
+                                                                decoration: const BoxDecoration(
+                                                                  shape: BoxShape.circle,
+                                                                  color: Colors.white,
+                                                                ),
                                                               ),
-                                                            ),
-                                                          ],
-                                                        )),
-                                                    Expanded(
-                                                      flex: 1,
-                                                      child: Center(
-                                                        child: Text(
-                                                          "Progress",
-                                                          style: TextStyle(
-                                                              fontFamily: "Alegreya_Sans",
-                                                              fontSize: MediaQuery.of(context).size.width * 0.045),
+
+                                                              Text(
+                                                                "$progress%",
+                                                                style: TextStyle(
+                                                                  fontFamily: "Alegreya_Sans",
+                                                                  fontSize: valueFont * 0.52,
+                                                                  fontWeight: FontWeight.bold,
+                                                                  color: const Color(0xff1565C0),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          ),
                                                         ),
-                                                      ),
+
+                                                        const Spacer(),
+
+                                                        /// LABEL SAME ALIGNMENT AS LEFT BOX
+                                                        Text(
+                                                          "Progress",
+                                                          textAlign: TextAlign.center,
+                                                          style: TextStyle(
+                                                            fontFamily: "Alegreya_Sans",
+                                                            fontSize: labelFont,
+                                                            fontWeight: FontWeight.w600,
+                                                            color: Colors.black87,
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
-                                                  ],
+                                                  ),
                                                 ),
-                                              ),
-                                            ),
-                                          ],
+                                              ],
+                                            );
+                                          },
                                         ),
                                       ),
-                                    ),
+                                    )
+                                    ///
                                   ],
                                 ),
                               ),

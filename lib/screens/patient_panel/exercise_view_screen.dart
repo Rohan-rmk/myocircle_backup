@@ -4308,7 +4308,10 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                                       ),
                                     ),
                                     ///
-                                    canExercisesSkip == true || canLoopSkip == true?Padding(
+                                    // canExercisesSkip == true || canLoopSkip == true?
+                                    ((!_isPlayingRepsVideo && canExercisesSkip == true))
+                                        ?
+                                    Padding(
                                       padding: const EdgeInsets.only(right: 27.5,bottom: 9),
                                       child: Align(
                                         alignment: Alignment.bottomRight,
