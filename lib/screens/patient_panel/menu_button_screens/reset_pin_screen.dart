@@ -445,97 +445,119 @@ class _ResetPinScreenState extends State<ResetPinScreen> {
                   child: Padding(
                     padding: const EdgeInsets.only(left: 25),
                     child: ScaleButton(
-                            onTap: () async {
-                              if (allowPin) {
-                                // Submit new PIN
-                                if (getPinAsInt() != null) {
-                                  bool allow = true;
-                                  for (var controller in _pinControllers) {
-                                    if (controller.text == "") {
-                                      SnackbarHelper.showSnackbar(
-                                          "Please enter full pin",
-                                          color: Colors.red);
-                                      allow = false;
-                                      break;
-                                    }
-                                  }
+    onTap: () async {
+    if (allowPin) {
+    /// STEP 1: Check confirm PIN fields filled
+    bool allow = true;
+    for (var controller in _pinControllers) {
+    if (controller.text.trim().isEmpty) {
+    SnackbarHelper.showSnackbar(
+    "Please enter full confirm PIN",
+    color: Colors.red,
+    );
+    allow = false;
+    break;
+    }
+    }
 
-                                  if (allow) {
-                                    loadLoader: true;
+    if (!allow) return;
 
-                                    try {
-                                      var setPinResponse =
-                                          await ApiService.setPin(
-                                              context,
-                                              profileId,
-                                              userId,
-                                              getPinAsInt()!);
+    /// STEP 2: Get both PINs
+    final enteredPin = _codeControllers.map((c) => c.text.trim()).join();
+    final confirmPin = _pinControllers.map((c) => c.text.trim()).join();
 
-                                      setState(() {
-                                        isLoading = false;
-                                      });
+    /// STEP 3: Validate both PINs filled
+    if (enteredPin.length != 4) {
+    SnackbarHelper.showSnackbar(
+    "Please enter full PIN",
+    color: Colors.red,
+    );
+    return;
+    }
 
-                                      session.updatePin(getPinAsInt()!);
+    /// 🔴 STEP 4: MATCH VALIDATION (MAIN FIX)
+    if (enteredPin != confirmPin) {
+    SnackbarHelper.showSnackbar(
+    "PIN mismatch. Please re-enter",
+    color: Colors.red,
+    );
+    return;
+    }
 
-                                      if (setPinResponse['status'] == 200) {
-                                        setState(() {
-                                          showSuccess = true;
-                                        });
+    /// STEP 5: API CALL
+    setState(() {
+    isLoading = true;
+    });
 
-                                        // Automatically navigate back after 2 seconds
-                                        Future.delayed(Duration(seconds: 2), () {
-                                          if (mounted) {
-                                            Provider.of<IndexProvider>(context, listen: false)
-                                                .setIndex(PatientTab.home.index);
-                                          }
-                                        });
-                                      } else {
-                                        SnackbarHelper.showSnackbar(
-                                            "Failed to update PIN: ${setPinResponse['message'] ?? 'Unknown error'}",
-                                            color: Colors.red);
-                                      }
-                                    } catch (e) {
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                      SnackbarHelper.showSnackbar(
-                                          "Error updating PIN: $e",
-                                          color: Colors.red);
-                                    }
-                                  }
-                                } else {
-                                  SnackbarHelper.showSnackbar(
-                                      "Please enter pin correctly",
-                                      color: Colors.red);
-                                }
-                              } else {
-                                // First step - validate current PIN
-                                if (getCodeAsInt() != null) {
-                                  bool allow = true;
-                                  for (var controller in _codeControllers) {
-                                    if (controller.text == "") {
-                                      SnackbarHelper.showSnackbar(
-                                          "Please enter full pin",
-                                          color: Colors.red);
-                                      allow = false;
-                                      break;
-                                    }
-                                  }
+    try {
+    var setPinResponse = await ApiService.setPin(
+    context,
+    profileId,
+    userId,
+    int.parse(confirmPin),
+    );
 
-                                  if (allow) {
-                                    // Here you might want to verify the current PIN before allowing change
-                                    // For now, just proceed to the next step
-                                    setState(() {
-                                      allowPin = true;
-                                    });
-                                  }
-                                } else {
-                                  SnackbarHelper.showSnackbar(
-                                      "Please enter pin correctly",
-                                      color: Colors.red);
-                                }
-                              }
-                            },
+    setState(() {
+    isLoading = false;
+    });
+
+    session.updatePin(int.parse(confirmPin));
+
+    if (setPinResponse['status'] == 200) {
+    setState(() {
+    showSuccess = true;
+    });
+
+    Future.delayed(const Duration(seconds: 2), () {
+    if (mounted) {
+    Provider.of<IndexProvider>(context, listen: false)
+        .setIndex(PatientTab.home.index);
+    }
+    });
+    } else {
+    SnackbarHelper.showSnackbar(
+    "Failed to update PIN: ${setPinResponse['message'] ?? 'Unknown error'}",
+    color: Colors.red,
+    );
+    }
+    } catch (e) {
+    setState(() {
+    isLoading = false;
+    });
+    SnackbarHelper.showSnackbar(
+    "Error updating PIN: $e",
+    color: Colors.red,
+    );
+    }
+    } else {
+    /// FIRST STEP (UNCHANGED)
+    if (getCodeAsInt() != null) {
+    bool allow = true;
+
+    for (var controller in _codeControllers) {
+    if (controller.text.isEmpty) {
+    SnackbarHelper.showSnackbar(
+    "Please enter full pin",
+    color: Colors.red,
+    );
+    allow = false;
+    break;
+    }
+    }
+
+    if (allow) {
+    setState(() {
+    allowPin = true;
+    });
+    }
+    } else {
+    SnackbarHelper.showSnackbar(
+    "Please enter pin correctly",
+    color: Colors.red,
+    );
+    }
+    }
+    },
                             child: Image.asset(EXERCISE_VIEW_SUBMIT_BTN)),
                   ),
                 ),

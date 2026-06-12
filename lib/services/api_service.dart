@@ -381,6 +381,7 @@ class ApiService {
     required int userId,
     required int profileId,
     required String termsAccepted,
+    required String selfieCamera,
   }) async {
     return await postWithBanner(
       text: "Recording appliance consent",
@@ -396,6 +397,7 @@ class ApiService {
         "userId": userId,
         "profileId": profileId,
         "termsAccepted": termsAccepted,
+        "selfieCamera": selfieCamera,
       },
     );
   }
@@ -738,7 +740,30 @@ class ApiService {
     );
   }
 
-
+///
+  static Future<Map<String, dynamic>> applianceLogging({
+    required BuildContext context,
+    required String userToken,
+    required String patientId,
+    required String isApplied, // "yes" or "no"
+  }) async {
+    return await postWithBanner(
+      text: "Saving response",
+      value: true,
+      loadLoader: true,
+      context: context,
+      customHeaders: {
+        ...headers,
+        'user_token': userToken,
+      },
+      endpoint: 'appliancelogging',
+      body: {
+        "patient_id": patientId,
+        "is_appliance_applied": isApplied,
+      },
+    );
+  }
+  ///
   /// Update user profile photo with loading banner and error handling
   static Future<Map<String, dynamic>> updateUserProfilePhotoAndName({
     required BuildContext context,

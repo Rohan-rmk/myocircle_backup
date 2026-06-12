@@ -372,12 +372,12 @@ class _LoginScreenState extends State<LoginScreen> {
                                           return;
                                         }
 
-// Try to read familyMembers
+                                      // Try to read familyMembers
                                         final familyMembersRaw =
                                             data['familyMembers'];
                                         bool anyMemberHasQuestions = false;
 
-                                        if (familyMembersRaw is List) {
+                                        if (familyMembersRaw is List && familyMembersRaw.isNotEmpty) {
                                           for (var item in familyMembersRaw) {
                                             if (item is Map<String, dynamic>) {
                                               final fq =

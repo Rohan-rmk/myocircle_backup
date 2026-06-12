@@ -81,8 +81,9 @@ class MyApp extends StatelessWidget {
       ),
       home: const SplashScreen(),
       builder: (context, child) {
+        final mediaQuery = MediaQuery.of(context);
         return MediaQuery(
-          data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+          data: mediaQuery.copyWith(textScaleFactor: 1.0),
           child: child!,
         );
       },

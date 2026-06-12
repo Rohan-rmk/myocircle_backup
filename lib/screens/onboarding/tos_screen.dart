@@ -95,6 +95,7 @@ class _TosScreenState extends State<TosScreen> {
       userId: userData['userId'],
       profileId: userData['profileId'],
       termsAccepted: "Agree",
+      selfieCamera: _isChecked1 ? "Yes" : "No",
     );
     print("&&&&&&&&");
     print(userData['user_token']);

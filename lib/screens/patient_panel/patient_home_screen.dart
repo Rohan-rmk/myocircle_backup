@@ -74,7 +74,23 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
         session.setSelectedProfileId(profileId);
       }
 
-      landingPage(); // API call
+      landingPage();
+      Future.delayed(const Duration(seconds: 2), () {
+        if (!mounted) return; // 🔥 VERY IMPORTANT
+
+        final session = Provider.of<SessionProvider>(context, listen: false);
+
+        // 🔥 STOP if user logged out
+        if (session.userData == null) return;
+
+        final _showPopup = session.userData?['isapplianceNotification'];
+        final showPopup = session.showPopup;
+
+        if (showPopup && _showPopup != null) {
+          showAppliancePopup(context);
+          session.setPopupShown(false);
+        }
+      });
     });
   }
   // @override
@@ -206,11 +222,30 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                               height: 48,
                               margin: EdgeInsets.only(right: 8),
                               child: ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async {
+                                  // setState(() {
+                                  //   _selectedChoice = true;
+                                  // });
+                                  // Navigator.of(context).pop();
+                                  ///
+                                  final session = Provider.of<SessionProvider>(context, listen: false);
+
+                                  final userToken = session.userData?['user_token'];
+                                  final patientId = session.selectedProfileId?.toString();
+
                                   setState(() {
                                     _selectedChoice = true;
                                   });
+
                                   Navigator.of(context).pop();
+
+                                  await ApiService.applianceLogging(
+                                    context: context,
+                                    userToken: userToken,
+                                    patientId: patientId.toString(),
+                                    isApplied: "yes",
+                                  );
+                                  ///
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: _selectedChoice == true
@@ -250,12 +285,35 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                               height: 48,
                               margin: EdgeInsets.only(left: 8),
                               child: ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _selectedChoice = false;
-                                  });
-                                  Navigator.of(context).pop();
-                                },
+                                // onPressed: () {
+                                //   setState(() {
+                                //     _selectedChoice = false;
+                                //   });
+                                //   Navigator.of(context).pop();
+                                // },
+                                ///
+                                  onPressed: () async {
+                                    final session = Provider.of<SessionProvider>(context, listen: false);
+
+                                    final userToken = session.userData?['user_token'];
+
+
+                                    final patientId = session.selectedProfileId?.toString();
+
+                                    setState(() {
+                                      _selectedChoice = false;
+                                    });
+
+                                    Navigator.of(context).pop();
+
+                                    await ApiService.applianceLogging(
+                                      context: context,
+                                      userToken: userToken,
+                                      patientId: patientId.toString(),
+                                      isApplied: "no",
+                                    );
+                                  },
+                                ///
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: _selectedChoice == false
                                       ? Color(0xffF44336) // Red when clicked
@@ -562,47 +620,43 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(
-                        height: 50,
-                        width: 50,
+                        height: 45,
+                        width: 45,
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
 
-                            /// Avatar background
+                            /// Ring Border
                             Positioned.fill(
-                              child: Padding(
-                                padding: const EdgeInsets.all(1),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      image: AssetImage(DOCTOR_AVATAR_BG),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-
-                                  /// Clip image inside circle
-                                  child: ClipOval(
-                                    child: userData?['therapistInfo']?['therapistProfileImage'] != null &&
-                                        userData!['therapistInfo']['therapistProfileImage']
-                                            .toString()
-                                            .isNotEmpty
-                                        ? Image.memory(
-                                      base64Decode(
-                                        userData['therapistInfo']['therapistProfileImage'],
-                                      ),
-                                      fit: BoxFit.cover,   // important
-                                    )
-                                        : Icon(Icons.person,color: Colors.white)
-                                  ),
-                                ),
+                              child: Image.asset(
+                                "assets/components/patient_messages_screen/doctor_avatar_ring.png",
+                                fit: BoxFit.fill,
                               ),
                             ),
 
-                            /// Ring overlay
-                            Positioned.fill(
-                              child: Image.asset(
-                                DOCTOR_AVATAR_RING,
-                                fit: BoxFit.fill,
+                            /// Profile Image
+                            Container(
+                              height: 37.5,
+                              width: 37.5,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                              ),
+                              child: ClipOval(
+                                child: userData?['therapistInfo']?['therapistProfileImage'] != null &&
+                                    userData!['therapistInfo']['therapistProfileImage'].toString().isNotEmpty
+                                    ? Image.memory(
+                                  base64Decode(
+                                    userData['therapistInfo']['therapistProfileImage'],
+                                  ),
+                                  fit: BoxFit.cover,
+                                )
+                                    : Container(
+                                  color: const Color(0xff1349D1),
+                                  child: const Icon(
+                                    Icons.person,
+                                    color: Colors.white,
+                                  ),
+                                ),
                               ),
                             ),
                           ],

@@ -2384,6 +2384,7 @@ import 'package:myocircle15screens/main.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:scale_button/scale_button.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 import '../../components/components_path.dart';
 import '../../providers/index_provider.dart';
@@ -3486,7 +3487,7 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
 
   late final session = Provider.of<SessionProvider>(context, listen: false);
   late final int profileId = session.userData?['profileId'];
-  late final int? selectedProfile = session.selectedProfileId; // adjust name if needed
+  late final int? selectedProfile = session.selectedProfileId;
 
   late final bool shouldCallApi = profileId == selectedProfile;
 
@@ -3512,6 +3513,9 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
 
         // ✅ FIX
         canExercisesSkip = exercise['canSkipEducationVideo'] ?? false;
+
+        print("📌 canSkipEducationVideo from API = ${exercise['canSkipEducationVideo']}");
+        print("📌 canExercisesSkip assigned = $canExercisesSkip");
         canLoopSkip = loop['canSkipLoopVideos'] ?? false;
 
         currentExerciseName = exercise['name'] ?? "";
@@ -3544,9 +3548,12 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
 
         if (!exercise['isExerciseComplete']) {
           final loopExercises = exercise['loopExercises'] as List<dynamic>;
-          canExercisesSkip = exercise['canSkipEducationVideo'];
+          canExercisesSkip = exercise['canSkipEducationVideo'] ?? false;
+
+          print("📌 API canSkipEducationVideo = ${exercise['canSkipEducationVideo']}");
+          print("📌 canExercisesSkip = $canExercisesSkip");
+          print("📌 Full Exercise Data = $exercise");
           print("canExercisesSkip");
-          print(canExercisesSkip);
           for (int loopIdx = 0; loopIdx < loopExercises.length; loopIdx++) {
             final loopExercise = loopExercises[loopIdx];
 
@@ -3611,6 +3618,7 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
     _betterController?.dispose(); // ✅ updated
     _overlayTimer?.cancel();
     _positionSub?.cancel();
+    WakelockPlus.disable();
     resetOrientation();
     _cameraController?.dispose();
     _nextExerciseTimer?.cancel();
@@ -4019,13 +4027,17 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
     );
 
     _betterController!.addEventsListener((event) {
+      WakelockPlus.enable();
       if (event.betterPlayerEventType == BetterPlayerEventType.play) {
         setState(() {
           _videoReady = true;
           _isPlayingRepsVideo = false;
         });
       }
-
+      if (event.betterPlayerEventType == BetterPlayerEventType.pause ||
+          event.betterPlayerEventType == BetterPlayerEventType.finished) {
+        WakelockPlus.disable(); // ✅ ALLOW SLEEP
+      }
       if (event.betterPlayerEventType == BetterPlayerEventType.finished) {
         _loadRepsVideo();
       }
@@ -4071,12 +4083,16 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
 
     _betterController!.addEventsListener((event) {
       if (event.betterPlayerEventType == BetterPlayerEventType.play) {
+        WakelockPlus.enable();
         setState(() {
           _videoReady = true;
           _isPlayingRepsVideo = true;
         });
       }
-
+      if (event.betterPlayerEventType == BetterPlayerEventType.pause ||
+          event.betterPlayerEventType == BetterPlayerEventType.finished) {
+        WakelockPlus.disable();
+      }
       if (event.betterPlayerEventType == BetterPlayerEventType.finished) {
         if (completedReps < totalRepsForCurrentLoop - 1) {
           setState(() {
@@ -4145,13 +4161,11 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      canPop: canPop,
-      onPopInvokedWithResult: (bool didPop, result) {
-        onComplete();
+      canPop: false, // ❗ block default back
+      onPopInvoked: (didPop) async {
+        if (didPop) return;
 
-        if (_videoReady) {
-          _betterController?.pause();
-        }
+        backButtonDialog(); // ✅ show Stay / Leave popup
       },
       child: Scaffold(
         backgroundColor: Colors.black,
@@ -4309,31 +4323,28 @@ class _ExerciseViewScreenState extends State<ExerciseViewScreen> with WidgetsBin
                                     ),
                                     ///
                                     // canExercisesSkip == true || canLoopSkip == true?
-                                    ((!_isPlayingRepsVideo && canExercisesSkip == true))
-                                        ?
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 27.5,bottom: 9),
-                                      child: Align(
-                                        alignment: Alignment.bottomRight,
-                                        child: MaterialButton(
-                                          color: Colors.indigo,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(8),
-                                            side: const BorderSide(
-                                              color: Color(0xFF00E5FF),
-                                              width: 1,
+                                    if (!_isPlayingRepsVideo && canExercisesSkip)
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 27.5, bottom: 9),
+                                        child: Align(
+                                          alignment: Alignment.bottomRight,
+                                          child: MaterialButton(
+                                            color: Colors.indigo,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(8),
+                                              side: const BorderSide(
+                                                color: Color(0xFF00E5FF),
+                                                width: 1,
+                                              ),
                                             ),
-                                          ),
-                                          onPressed: () {
-                                            _handleSkip();
-                                          },
-                                          child: const Text(
-                                            "Skip",
-                                            style: TextStyle(color: Colors.white),
+                                            onPressed: _handleSkip,
+                                            child: const Text(
+                                              "Skip",
+                                              style: TextStyle(color: Colors.white),
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ):SizedBox.shrink(),
 
                                     // overlay buttons (your same)
                                     if (showOverlay && isPlaying)

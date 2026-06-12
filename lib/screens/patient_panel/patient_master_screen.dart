@@ -50,163 +50,6 @@ class _PatientMasterScreenState extends State<PatientMasterScreen> {
     },
   ];
   bool isSelfie = false;
-  // void showProfile(){
-  //   final landingPageData = Provider.of<sessionProvider>(context,listen: false).landingPageData;
-  //   showDialog(barrierColor: Colors.transparent,context: context, builder: (context){
-  //     return Column(mainAxisSize: MainAxisSize.min,
-  //       children: [
-  //         Card(shape: RoundedRectangleBorder(borderRadius: BorderRadius.only(bottomRight: Radius.circular(65),bottomLeft: Radius.circular(65))),
-  //           child: Column(mainAxisSize: MainAxisSize.min,
-  //             children: [
-  //               Padding(
-  //                 padding: const EdgeInsets.all(8.0),
-  //                 child: Container(height: 100,width: 100,decoration: BoxDecoration(shape: BoxShape.circle,boxShadow: [
-  //                   BoxShadow(
-  //                     color: Colors.black54,blurRadius:7,spreadRadius: 1,offset: Offset(-2,4),
-  //                   )
-  //                 ]),
-  //                   child: Stack(alignment: Alignment.center,
-  //                     children: [
-  //                       Padding(
-  //                         padding: const EdgeInsets.all(8.0),
-  //                         child: Container(decoration: BoxDecoration(image: DecorationImage(image: AssetImage(AVATAR_CONTAINER_INNER))),child: Skeletonizer(enabled:landingPageData==null,
-  //                           child: ClipRRect(borderRadius: BorderRadius.circular(50),child:landingPageData==null || landingPageData['patientAvatarURL']==null?AspectRatio(aspectRatio: 2/2,child: displayBase64Image(defaultBase64)):Base64ImageWidget(base64String: landingPageData['patientAvatarURL'])
-  //                           ),
-  //                         )),
-  //                       ),
-  //                       Image.asset(AVATAR_CONTAINER_OUTER),
-  //                     ],
-  //                   ),
-  //                 ),
-  //               ),
-  //               Text(
-  //                 "${landingPageData?['profileName']}",
-  //                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.w400,fontFamily: "Alegreya_Sans",color: Color(0xff8E8E93)),
-  //               ),
-  //               Row(
-  //                 children: [
-  //                   Expanded(
-  //                     child: TextButton(onPressed: (){
-  //
-  //                     },
-  //                       child: Column(
-  //                         children: [
-  //                           Image.asset(listItems[0]['icon']),
-  //                           Text(
-  //                             listItems[0]['name'],
-  //                             style: TextStyle(fontSize: 20, fontFamily: "Alegreya_Sans",fontWeight: FontWeight.w400,color:  Color(0xff8E8E93)),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   Expanded(
-  //                     child: TextButton(onPressed: (){
-  //
-  //                     },
-  //                       child: Column(
-  //                         children: [
-  //                           Text(
-  //                             listItems[0]['name'],
-  //                             style: TextStyle(fontSize: 20, fontFamily: "Alegreya_Sans",fontWeight: FontWeight.w400,color:  Color(0xff8E8E93)),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   Expanded(
-  //                     child: TextButton(onPressed: (){
-  //
-  //                     },
-  //                       child: Column(
-  //                         children: [
-  //                           Text(
-  //                             listItems[0]['name'],
-  //                             style: TextStyle(fontSize: 20, fontFamily: "Alegreya_Sans",fontWeight: FontWeight.w400,color:  Color(0xff8E8E93)),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //               Row(
-  //                 children: [
-  //                   Expanded(
-  //                     child: TextButton(onPressed: (){
-  //
-  //                     },
-  //                       child: Column(
-  //                         children: [
-  //                           Text(
-  //                             listItems[0]['name'],
-  //                             style: TextStyle(fontSize: 20, fontFamily: "Alegreya_Sans",fontWeight: FontWeight.w400,color:  Color(0xff8E8E93)),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   Expanded(
-  //                     child: TextButton(onPressed: (){
-  //
-  //                     },
-  //                       child: Column(
-  //                         children: [
-  //                           Text(
-  //                             listItems[0]['name'],
-  //                             style: TextStyle(fontSize: 20, fontFamily: "Alegreya_Sans",fontWeight: FontWeight.w400,color:  Color(0xff8E8E93)),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   Expanded(
-  //                     child: TextButton(onPressed: (){
-  //
-  //                     },
-  //                       child: Column(
-  //                         children: [
-  //                           Text(
-  //                             listItems[0]['name'],
-  //                             style: TextStyle(fontSize: 20, fontFamily: "Alegreya_Sans",fontWeight: FontWeight.w400,color:  Color(0xff8E8E93)),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //               Row(
-  //                 children: [
-  //                   Expanded(
-  //                     child: SizedBox()
-  //                   ),
-  //                   Expanded(
-  //                     child: TextButton(onPressed: (){
-  //
-  //                     },
-  //                       child: Column(
-  //                         children: [
-  //                           Text(
-  //                             listItems[0]['name'],
-  //                             style: TextStyle(fontSize: 20, fontFamily: "Alegreya_Sans",fontWeight: FontWeight.w400,color:  Color(0xff8E8E93)),
-  //                           ),
-  //                         ],
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   Expanded(
-  //                     child: SizedBox()
-  //                   ),
-  //                 ],
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ],
-  //     );
-  //   });
-  // }
   bool showProfile = false;
   bool showResetPin = false;
   int selectedMenuIndex = -1;
@@ -230,6 +73,7 @@ class _PatientMasterScreenState extends State<PatientMasterScreen> {
     if (response["status"] == 200) {
       print("Logout successful");
     }
+
     setState(() {
       Provider.of<SessionProvider>(context, listen: false).resetAll();
       Provider.of<IndexProvider>(context, listen: false).setIndex(0);
@@ -573,11 +417,31 @@ class _PatientMasterScreenState extends State<PatientMasterScreen> {
                                                                       width: 70,
                                                                       child: CustomSwitch(
                                                                         value: isSelfie,
-                                                                        onChanged: (value) {
-                                                                          setState(() {
-                                                                            isSelfie = value;
-                                                                          });
-                                                                        },
+                                                                          onChanged: (value) async {
+                                                                            setState(() {
+                                                                              isSelfie = value;
+                                                                            });
+
+                                                                            final session =
+                                                                            Provider.of<SessionProvider>(context, listen: false);
+
+                                                                            final userToken = session.userData?['user_token'];
+                                                                            final userId = session.userData?['userId'];
+                                                                            final profileId = session.selectedProfileId;
+
+                                                                            final selfieValue = value ? "Yes" : "No";
+
+                                                                            print("Selfie Mode: $selfieValue");
+
+                                                                            await ApiService.recordConsentAppliance(
+                                                                              context: context,
+                                                                              userToken: userToken,
+                                                                              userId: userId,
+                                                                              profileId: profileId!,
+                                                                              termsAccepted: "Agree", // or your actual value
+                                                                              selfieCamera: selfieValue, // ✅ PASS HERE
+                                                                            );
+                                                                          }
                                                                       ),
                                                                     ),
                                                                     Text(

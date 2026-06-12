@@ -1,3 +1,6 @@
+
+
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -12,6 +15,38 @@ import 'package:provider/provider.dart';
 import '../../providers/session_provider.dart';
 import '../../services/api_service.dart';
 
+
+class DailyCategoryData {
+  final String date;
+  final double lips;
+  final double tongue;
+  final double breathing;
+  final double posture;
+
+  DailyCategoryData({
+    required this.date,
+    required this.lips,
+    required this.tongue,
+    required this.breathing,
+    required this.posture,
+  });
+}
+
+class CategoryStatusData {
+  final String category;
+  final double completed;
+  final double delayed;
+  final double skipped;
+  final double missed;
+
+  CategoryStatusData({
+    required this.category,
+    required this.completed,
+    required this.delayed,
+    required this.skipped,
+    required this.missed,
+  });
+}
 class PatientReportScreen extends StatefulWidget {
   const PatientReportScreen({super.key});
 
@@ -51,6 +86,7 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
   final List therapistScoreData = [];
   final List symptomImprovementData = [];
   final List targetedExerciseData = [];
+  final List assignedExerciseData = [];
 
   // Streak Data
   final Set<DateTime> loggedInDays = {};
@@ -75,6 +111,10 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
       getApiData(context);
     });
   }
+  List assignedScoresData = [];
+  List targetedMuscleData = [];
+
+
 
   void getApiData(BuildContext context) async {
     setState(() {
@@ -118,7 +158,30 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
         [
           // Landing Page data
           getLandingPageData(context, userToken, profileId, userId),
-
+          getCategoryWiseStatusData(
+            context,
+            userToken,
+            fromDate,
+            toDate,
+            profileId,
+            userId,
+          ),
+          generateAssignedExerciseData(
+            context,
+            userToken,
+            fromDate,
+            toDate,
+            profileId,
+            userId,
+          ),
+          getDailyCategoryData(
+            context,
+            userToken,
+            fromDate,
+            toDate,
+            profileId,
+            userId,
+          ),
           // Overview Cards Data
           getOverviewData(
               context, userToken, fromDate, toDate, profileId, userId),
@@ -197,98 +260,84 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
   //     });
   //   }
   // }
+  int _safeInt(dynamic value) {
+    print("Checking value = $value | Type = ${value.runtimeType}");
+
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value) ?? 0;
+    if (value is List) return 0;
+
+    return 0;
+  }
   Future<void> getLandingPageData(
       BuildContext context,
       String userToken,
       int profileId,
       int userId,
       ) async {
-    final response =
-    await ApiService.landingPage(context, userToken, profileId, userId);
-
-    logApi(
-      apiName: "Landing Page",
-      request: {
+    try {
+      // ===== PRINT URL / PAYLOAD =====
+      print("======================================");
+      print("ACHIEVEMENTS API");
+      print("URL: ${ApiService.baseUrl}/landingPagev1");
+      print("Headers: user_token = $userToken");
+      print("Payload:");
+      print({
         "profileId": profileId,
         "userId": userId,
-      },
-      response: response,
-    );
-
-    if (response['code'] == 200) {
-      setState(() {
-        myopoints = response['data']['score'];
-        rank = response['data']['rank'];
-        skillsUnlocked = response['data']['skillsUnlocked'] ?? 3;
-        pointsToNextSkill = response['data']['pointsToNextSkill'] ?? 119;
       });
+      print("======================================");
+
+      final response = await ApiService.landingPage(
+        context,
+        userToken,
+        profileId,
+        userId,
+      );
+
+      // ===== PRINT FULL RESPONSE =====
+      print("Landing Full Response = $response");
+      print("Response Type = ${response.runtimeType}");
+
+      if (response['code'] == 200) {
+        final data = response['data'];
+        print("Gems = ${data['Gems']}");
+        print("Gems Type = ${data['Gems'].runtimeType}");
+
+        print("progress = ${data['progress']}");
+        print("progress Type = ${data['progress'].runtimeType}");
+        setState(() {
+          myopoints = _safeInt(data['score']);
+          rank = _safeInt(data['rank']);
+
+          skillsUnlocked = (data['Gems'] is List)
+              ? (data['Gems'] as List)
+              .where((gem) =>
+          gem is Map &&
+              gem['gemStatus'] is Map &&
+              gem['gemStatus']['isGemLocked'] == 'UNLOCK')
+              .length
+              : 0;
+
+          pointsToNextSkill =
+          (data['progress'] is Map)
+              ? _safeInt(data['progress']['score'])
+              : _safeInt(data['progress']);
+        });
+
+        print(data);
+      } else {
+        print("Landing API Failed = ${response['code']}");
+      }
+    } catch (e) {
+      print("Landing API Error = $e");
     }
   }
 
-  // Overview Cards Data
-  // Future<void> getOverviewData(
-  //   BuildContext context,
-  //   String userToken,
-  //   String fromDate,
-  //   String toDate,
-  //   int profileId,
-  //   int userId,
-  // ) async {
-  //   // Compliance Data
-  //   final complianceResponse = await ApiService.getReportDataByType(context,
-  //       userToken, fromDate, toDate, "OverAllCompletion", profileId, userId);
-  //   if (complianceResponse is Map) {
-  //     setState(() {
-  //       compliance =
-  //           (complianceResponse['completionPercentage'] ?? 0.0).toDouble();
-  //     });
-  //   }
-  //
-  //   // Session Duration Data
-  //   final sessionDurationResponse = await ApiService.getReportDataByType(
-  //       context,
-  //       userToken,
-  //       fromDate,
-  //       toDate,
-  //       "SessionDurationAll",
-  //       profileId,
-  //       userId);
-  //   if (sessionDurationResponse is Map) {
-  //     setState(() {
-  //       sessionDuration =
-  //           (sessionDurationResponse['sessionDuration'] ?? 0.0).toDouble();
-  //     });
-  //   }
-  //
-  //   // Daily Login Data
-  //   final loginFrequencyResponse = await ApiService.getReportDataByType(context,
-  //       userToken, fromDate, toDate, "LoginFrequency", profileId, userId);
-  //   if (loginFrequencyResponse is Map) {
-  //     setState(() {
-  //       dailyLogin =
-  //           (loginFrequencyResponse['sessionDuration'] ?? 0.0).toDouble();
-  //     });
-  //   }
-  //
-  //   // Total Time Spent (calculate from session duration data)
-  //   final sessionDurationDatewise = await ApiService.getReportDataByType(
-  //       context,
-  //       userToken,
-  //       fromDate,
-  //       toDate,
-  //       "SessionDurationDatewise",
-  //       profileId,
-  //       userId);
-  //   if (sessionDurationDatewise is List) {
-  //     double totalDuration = 0.0;
-  //     for (final item in sessionDurationDatewise.cast<dynamic>()) {
-  //       totalDuration += (item['avgSessionDuration'] ?? 0.0).toDouble();
-  //     }
-  //     setState(() {
-  //       totalTimeSpent = (totalDuration / 60).toDouble(); // Convert to hours
-  //     });
-  //   }
-  // }
+
+  double overallCompletion = 0.0;
   Future<void> getOverviewData(
       BuildContext context,
       String userToken,
@@ -321,7 +370,7 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
 
     if (complianceResponse is Map) {
       setState(() {
-        compliance =
+        overallCompletion =
             (complianceResponse['completionPercentage'] ?? 0.0).toDouble();
       });
     }
@@ -414,7 +463,61 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
     }
   }
 
+  List<DailyCategoryData> dailyChartData = [];
 
+  Future<void> getDailyCategoryData( context,
+  userToken,
+  fromDate,
+  toDate,
+  profileId,
+  userId,) async {
+  final response = await ApiService.getReportDataByType(
+  context,
+  userToken,
+  fromDate,
+  toDate,
+  "DailyExerciseCompletionByCategoryandDate",
+  profileId,
+  userId,
+  );
+
+  print("RAW RESPONSE = ${jsonEncode(response)}");
+
+  if (response is List) {
+  Map<String, Map<String, double>> groupedData = {};
+
+  for (var item in response) {
+  String date = item['exercise_day'];
+  String category = item['category'];
+  double value = (item['completion_percentage'] ?? 0).toDouble();
+
+  groupedData.putIfAbsent(date, () => {});
+
+  groupedData[date]![category] = value;
+  }
+
+  /// Convert to list
+  List<DailyCategoryData> tempList = [];
+
+  groupedData.forEach((date, categories) {
+  tempList.add(
+  DailyCategoryData(
+  date: date,
+  lips: categories['Lips'] ?? 0,
+  tongue: categories['Tongue'] ?? 0,
+  breathing: categories['Breathing'] ?? 0,
+  posture: categories['Posture'] ?? 0,
+  ),
+  );
+  });
+
+  setState(() {
+  dailyChartData = tempList;
+  });
+
+  print("FINAL GROUPED DATA = $dailyChartData");
+  }
+  }
   // Session Duration Data for Chart
   Future<void> getSessionDurationData(
     BuildContext context,
@@ -448,86 +551,231 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
   }
 
   // Exercise Completion Data for Pie Chart
-  Future<void> getExerciseCompletionData(
-    BuildContext context,
-    String userToken,
-    String fromDate,
-    String toDate,
-    int profileId,
-    int userId,
-  ) async {
-    final exerciseOvResponse = await ApiService.getReportDataByType(
-        context,
-        userToken,
-        fromDate,
-        toDate,
-        "ExercisewiseCompletionDatewise",
-        profileId,
-        userId);
+  // Future<void> getExerciseCompletionData(
+  //   BuildContext context,
+  //   String userToken,
+  //   String fromDate,
+  //   String toDate,
+  //   int profileId,
+  //   int userId,
+  // ) async {
+  //   final exerciseOvResponse = await ApiService.getReportDataByType(
+  //       context,
+  //       userToken,
+  //       fromDate,
+  //       toDate,
+  //       "ExercisewiseCompletionDatewise",
+  //       profileId,
+  //       userId);
+  //
+  //   if (exerciseOvResponse is List && exerciseOvResponse.isNotEmpty) {
+  //     // Use the most recent data
+  //     final latestData = exerciseOvResponse.cast<dynamic>().last;
+  //     List<ChartData> tempChartData = [];
+  //
+  //     tempChartData.add(ChartData(
+  //         'Completed',
+  //         (latestData['completionPercentage'] ?? 0).toInt(),
+  //         const Color(0xff25ADA4)));
+  //     tempChartData.add(ChartData('Skipped',
+  //         (latestData['skippedPercentage'] ?? 0).toInt(), Colors.orange));
+  //     tempChartData.add(ChartData(
+  //         'Missed', (latestData['missedPercentage'] ?? 0).toInt(), Colors.red));
+  //
+  //     setState(() {
+  //       chartData.clear();
+  //       chartData.addAll(tempChartData);
+  //     });
+  //   }
+  // }
+  ///
 
-    if (exerciseOvResponse is List && exerciseOvResponse.isNotEmpty) {
-      // Use the most recent data
-      final latestData = exerciseOvResponse.cast<dynamic>().last;
-      List<ChartData> tempChartData = [];
+  List<CategoryStatusData> categoryStatusData = [];
+  Future<void> getCategoryWiseStatusData(
+      BuildContext context,
+      String userToken,
+      String fromDate,
+      String toDate,
+      int profileId,
+      int userId,
+      ) async {
 
-      tempChartData.add(ChartData(
-          'Completed',
-          (latestData['completionPercentage'] ?? 0).toInt(),
-          const Color(0xff25ADA4)));
-      tempChartData.add(ChartData('Skipped',
-          (latestData['skippedPercentage'] ?? 0).toInt(), Colors.orange));
-      tempChartData.add(ChartData(
-          'Missed', (latestData['missedPercentage'] ?? 0).toInt(), Colors.red));
+    /// 🔥 PRINT PAYLOAD
+    print("=====================================");
+    print("API: CategoryWisecompletedDelayedKkippedMissed");
+    print("Payload:");
+    print({
+      "fromDate": fromDate,
+      "toDate": toDate,
+      "profileId": profileId,
+      "userId": userId,
+    });
+    print("=====================================");
+
+    final response = await ApiService.getReportDataByType(
+      context,
+      userToken,
+      fromDate,
+      toDate,
+      "CategoryWisecompletedDelayedKkippedMissed",
+      profileId,
+      userId,
+    );
+
+    /// 🔥 PRINT RESPONSE
+    print("Category Status FULL Response = ${jsonEncode(response)}");
+
+    if (response is List) {
+      for (var item in response) {
+        print("---- CATEGORY ----");
+        print("Category: ${item['category']}");
+        print("Completed: ${item['completed_percentage']}");
+        print("Delayed: ${item['delayed_percentage']}");
+        print("Skipped: ${item['skipped_percentage']}");
+        print("Missed: ${item['missed_percentage']}");
+      }
 
       setState(() {
-        chartData.clear();
-        chartData.addAll(tempChartData);
+        categoryStatusData = response.map((e) {
+          return CategoryStatusData(
+            category: e['category'],
+            completed: (e['completed_percentage'] ?? 0).toDouble(),
+            delayed: (e['delayed_percentage'] ?? 0).toDouble(),
+            skipped: (e['skipped_percentage'] ?? 0).toDouble(),
+            missed: (e['missed_percentage'] ?? 0).toDouble(),
+          );
+        }).toList();
       });
     }
   }
+  ///
+  Future<void> getExerciseCompletionData(
+      BuildContext context,
+      String userToken,
+      String fromDate,
+      String toDate,
+      int profileId,
+      int userId,
+      ) async {
+    final response = await ApiService.getReportDataByType(
+      context,
+      userToken,
+      fromDate,
+      toDate,
+      "OverAllCompletion",
+      profileId,
+      userId,
+    );
 
+    print("Exercise Overview Full Response = $response");
+
+    if (response is Map) {
+      setState(() {
+        chartData.clear();
+
+        chartData.add(
+          ChartData(
+            'Completed',
+            (response['completionPercentage'] ?? 0).toInt(),
+            const Color(0xff25ADA4),
+          ),
+        );
+
+        chartData.add(
+          ChartData(
+            'Skipped',
+            (response['SkippedPercentage'] ?? 0).toInt(),
+            Colors.orange,
+          ),
+        );
+
+        chartData.add(
+          ChartData(
+            'Missed',
+            (response['missedPercentage'] ?? 0).toInt(),
+            Colors.red,
+          ),
+        );
+
+        chartData.add(
+          ChartData(
+            'Delayed',
+            (response['actualMissedPercentage'] ?? 0).toInt(),
+            Colors.blue,
+          ),
+        );
+      });
+
+      print("Chart Data Count = ${chartData.length}");
+    }
+  }
+  ///
+  Set<DateTime> tempLoggedInDays = {};
   // Streak Data for Calendar
   Future<void> getStreakData(
-    BuildContext context,
-    String userToken,
-    String fromDate,
-    String toDate,
-    int profileId,
-    int userId,
-  ) async {
+      BuildContext context,
+      String userToken,
+      String fromDate,
+      String toDate,
+      int profileId,
+      int userId,
+      ) async {
+
     final streakResponse = await ApiService.getReportDataByType(
-        context,
-        userToken,
-        fromDate,
-        toDate,
-        "StreakConsistencyDatewise",
-        profileId,
-        userId);
+      context,
+      userToken,
+      fromDate,
+      toDate,
+      "StreakConsistencyDatewise",
+      profileId,
+      userId,
+    );
+
+    /// ✅ PRINT FULL RESPONSE
+    print("🔥 STREAK API RESPONSE = $streakResponse");
 
     if (streakResponse is List) {
       Set<DateTime> tempLoggedInDays = {};
-      for (final item in streakResponse.cast<dynamic>()) {
-        final dateStr = item['exerciseDate'];
+
+      for (final item in streakResponse) {
+
+        /// ✅ PRINT EACH ITEM
+        print("➡️ ITEM = $item");
+
+        final dateStr = item['exerciseDate'].toString();
         final streak = item['streak'] ?? 0;
 
-        // Only add days with positive streak
+        print("📅 Date = $dateStr | 🔥 Streak = $streak");
+
         if (streak > 0) {
           try {
-            final dateParts = dateStr.split('-');
-            if (dateParts.length == 3) {
-              final streakDate = DateTime(int.parse(dateParts[2]),
-                  int.parse(dateParts[1]), int.parse(dateParts[0]));
+            final parts = dateStr.split('/'); // MM/dd
+
+            if (parts.length == 2) {
+              final month = int.parse(parts[0]);
+              final day = int.parse(parts[1]);
+              final year = DateTime.now().year;
+
+              final streakDate = DateTime(year, month, day);
+
+              /// ✅ PRINT FINAL DATE USED IN CALENDAR
+              print("✅ Highlighting Date = $streakDate");
+
               tempLoggedInDays.add(streakDate);
             }
           } catch (e) {
-            print("Error parsing streak date: $dateStr");
+            print("❌ Date Parse Error = $dateStr");
           }
         }
       }
+
       setState(() {
         loggedInDays.clear();
         loggedInDays.addAll(tempLoggedInDays);
       });
+
+      /// ✅ FINAL DATA USED BY TABLE CALENDAR
+      print("🎯 FINAL loggedInDays = $loggedInDays");
     }
   }
 
@@ -819,6 +1067,36 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
     print("Therapist Data List: $symptomImprovementData");
   }
 
+  ///
+  Future<void> generateAssignedExerciseData(
+      BuildContext context,
+      String userToken,
+      String fromDate,
+      String toDate,
+      int profileId,
+      int userId,
+      ) async {
+    final targetedExerciseDataResponse = await ApiService.getReportDataByType(
+      context,
+      userToken,
+      fromDate,
+      toDate,
+      "AssignedScores",
+      profileId,
+      userId,
+    );
+    print("AssignedScores: ${targetedExerciseDataResponse}");
+    if (targetedExerciseDataResponse is List &&
+        targetedExerciseDataResponse.isNotEmpty) {
+      assignedExerciseData.add(targetedExerciseDataResponse[0]['lips'] ?? 'NA');
+      assignedExerciseData.add(targetedExerciseDataResponse[0]['tongue'] ?? 'NA');
+      assignedExerciseData.add(targetedExerciseDataResponse[0]['breathing'] ?? 'NA');
+      assignedExerciseData.add(targetedExerciseDataResponse[0]['posture'] ?? 'NA');
+    }
+    print("Therapist Data List: $targetedExerciseData");
+  }
+  ///
+
   Future<void> generateTargetedExerciseData(
     BuildContext context,
     String userToken,
@@ -837,7 +1115,8 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
       userId,
     );
     print("Targeted Muscle Score: ${targetedExerciseDataResponse}");
-    if (targetedExerciseDataResponse != []) {
+    if (targetedExerciseDataResponse is List &&
+        targetedExerciseDataResponse.isNotEmpty) {
       targetedExerciseData.add(targetedExerciseDataResponse[0]['lips'] ?? 'NA');
       targetedExerciseData
           .add(targetedExerciseDataResponse[0]['tongue'] ?? 'NA');
@@ -880,7 +1159,11 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
     return DateFormat('MM/dd/yyyy').format(d);
   }
 
-  DateTime today = DateTime.now();
+  DateTime today = DateTime(
+    DateTime.now().year,
+    DateTime.now().month,
+    DateTime.now().day,
+  );
   bool isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
@@ -899,6 +1182,152 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
       );
     });
   }
+
+  // Widget buildDayBox(DateTime day, {bool isToday = false}) {
+  //   final hasStreak = loggedInDays.any((d) => isSameDay(d, day));
+  //
+  //   if (day.isAfter(today)) {
+  //     return Container(
+  //       margin: const EdgeInsets.all(4),
+  //       decoration: BoxDecoration(
+  //         color: hasStreak
+  //             ? Colors.green
+  //             : Colors.white,
+  //         borderRadius: BorderRadius.circular(8),
+  //       ),
+  //       alignment: Alignment.center,
+  //       child: Text(
+  //         '${day.day}',
+  //         style: TextStyle(
+  //           color: hasStreak ? Colors.white : Colors.black,
+  //           fontWeight: FontWeight.bold,
+  //         ),
+  //       ),
+  //     );
+  //   }
+  //
+  //   return Container(
+  //     margin: const EdgeInsets.all(4),
+  //     decoration: BoxDecoration(
+  //       color: hasStreak
+  //           ? Colors.green
+  //           : Colors.white,
+  //       border: Border.all(
+  //         color: isToday
+  //             ? const Color(0xff004701)
+  //             : Colors.grey.shade300,
+  //         width: isToday ? 2 : 1,
+  //       ),
+  //       borderRadius: BorderRadius.circular(8),
+  //     ),
+  //     alignment: Alignment.center,
+  //       child: Text(
+  //         '${day.day}',
+  //         style: TextStyle(
+  //           color: hasStreak
+  //               ? Colors.white
+  //               : Colors.black,
+  //           fontWeight: FontWeight.bold,
+  //         ),
+  //       ),
+  //   );
+  // }
+///
+  List<DateTime> getLast30Days() {
+    final today = DateTime.now();
+
+    return List.generate(30, (index) {
+      return DateTime(
+        today.year,
+        today.month,
+        today.day,
+      ).subtract(Duration(days: 30 - index)); // ✅ ends at today
+    });
+  }
+
+  Widget buildStreakGrid() {
+    final days = getLast30Days();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "30-Day Streak",
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: days.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 7,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+            ),
+            itemBuilder: (context, index) {
+              final day = days[index];
+
+              final hasStreak =
+              loggedInDays.any((d) => isSameDay(d, day));
+
+              return Container(
+                decoration: BoxDecoration(
+                  color: hasStreak
+                      ? Colors.green
+                      : Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  "${day.day}",
+                  style: TextStyle(
+                    color: hasStreak ? Colors.white : Colors.black54,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildDayBox(DateTime day, {bool isToday = false}) {
+    final hasStreak = loggedInDays.any((d) => isSameDay(d, day));
+
+    return Container(
+      margin: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: hasStreak ? Colors.green : Colors.white, // ✅ GREEN if streak
+        border: Border.all(
+          color: isToday ? const Color(0xff004701) : Colors.grey.shade300,
+          width: isToday ? 2 : 1,
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        '${day.day}',
+        style: TextStyle(
+          color: hasStreak ? Colors.white : Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+  ///
 
   @override
   Widget build(BuildContext context) {
@@ -924,7 +1353,6 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Container(
-            height: (showDefault) ? 2190 : 1510,
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
@@ -1163,14 +1591,14 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    "Session Duration",
+                                    "Total time spent",
                                     style: TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   Text(
-                                    sessionDuration.toStringAsFixed(1),
+                                    sessionDuration.toStringAsFixed(2),
                                     style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -1243,7 +1671,7 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
                                     ),
                                   ),
                                   Text(
-                                    dailyLogin.toStringAsFixed(1),
+                                    dailyLogin.toStringAsFixed(2),
                                     style: const TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -1302,7 +1730,7 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    "Total time spent",
+                                    "Session Duration",
                                     style: TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.bold,
@@ -1430,25 +1858,25 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
                     ],
                   ),
                 ),
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    children: [
-                      Text(
-                        "$pointsToNextSkill",
-                        style: const TextStyle(
-                          color: Color(0xffF4320B),
-                          fontSize: 25,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Text(
-                        "Points to Next Skill",
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ),
+                // Expanded(
+                //   flex: 2,
+                //   child: Column(
+                //     children: [
+                //       Text(
+                //         "$pointsToNextSkill",
+                //         style: const TextStyle(
+                //           color: Color(0xffF4320B),
+                //           fontSize: 25,
+                //           fontWeight: FontWeight.bold,
+                //         ),
+                //       ),
+                //       const Text(
+                //         "Points to Next Skill",
+                //         style: TextStyle(fontSize: 12),
+                //       ),
+                //     ],
+                //   ),
+                // ),
               ],
             ),
           ),
@@ -1457,7 +1885,7 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
         // 30 Day Streak Calendar
         Container(
           padding: const EdgeInsets.all(16),
-          height: 450,
+          height: 350,
           child: Container(
             padding: const EdgeInsets.all(7.5),
             width: double.infinity,
@@ -1474,7 +1902,7 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
               ],
             ),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const Text(
                   "30 Day Streak",
@@ -1483,102 +1911,35 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                TableCalendar(
-                  firstDay: DateTime.utc(today.year, today.month, 1),
-                  lastDay: DateTime.utc(today.year, today.month + 1, 0),
-                  focusedDay: today,
-                  calendarFormat: CalendarFormat.month,
-                  headerStyle: const HeaderStyle(
-                    formatButtonVisible: false,
-                    titleCentered: true,
-                    leftChevronVisible: false,
-                    rightChevronVisible: false,
-                  ),
-                  daysOfWeekStyle: const DaysOfWeekStyle(
-                    weekendStyle: TextStyle(color: Colors.red),
-                  ),
-                  calendarBuilders: CalendarBuilders(
-                    defaultBuilder: (context, day, focusedDay) {
-                      return AspectRatio(
-                        aspectRatio: 1.0,
-                        child: Builder(
-                          builder: (context) {
-                            if (day.isAfter(today)) {
-                              return Container(
-                                margin: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade300,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  '${day.day}',
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
-                              );
-                            } else if (loggedInDays
-                                .any((d) => isSameDay(d, day))) {
-                              return Container(
-                                margin: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xff25ADA4),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  '${day.day}',
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              );
-                            } else {
-                              return Container(
-                                margin: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  border:
-                                      Border.all(color: Colors.grey.shade300),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  '${day.day}',
-                                  style: const TextStyle(color: Colors.black),
-                                ),
-                              );
-                            }
-                          },
-                        ),
-                      );
-                    },
-                    todayBuilder: (context, day, focusedDay) {
-                      return AspectRatio(
-                        aspectRatio: 1.0,
-                        child: Container(
-                          margin: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            border: Border.all(
-                              color: const Color(0xff004701),
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            '${day.day}',
-                            style: const TextStyle(
-                              color: Color(0xff004701),
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                // TableCalendar(
+                //   firstDay: DateTime.utc(today.year, today.month, 1),
+                //   lastDay: DateTime.utc(today.year, today.month + 1, 0),
+                //   focusedDay: today,
+                //   calendarFormat: CalendarFormat.month,
+                //   headerStyle: const HeaderStyle(
+                //     formatButtonVisible: false,
+                //     titleCentered: true,
+                //     leftChevronVisible: false,
+                //     rightChevronVisible: false,
+                //   ),
+                //   daysOfWeekStyle: const DaysOfWeekStyle(
+                //     weekendStyle: TextStyle(color: Colors.red),
+                //   ),
+                //   calendarBuilders: CalendarBuilders(
+                //     defaultBuilder: (context, day, focusedDay) {
+                //       return buildDayBox(day);
+                //     },
+                //
+                //     todayBuilder: (context, day, focusedDay) {
+                //       return buildDayBox(day, isToday: true);
+                //     },
+                //
+                //     outsideBuilder: (context, day, focusedDay) {
+                //       return buildDayBox(day);
+                //     },
+                //   ),
+                // ),
+                buildStreakGrid(),
               ],
             ),
           ),
@@ -1777,9 +2138,60 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
     return Column(
       children: [
         // Therapist Assigned Scores - Horizontal Bars
+        // Container(
+        //   padding: const EdgeInsets.all(16),
+        //   height: 300,
+        //   width: double.infinity,
+        //   child: Container(
+        //     padding: const EdgeInsets.all(10),
+        //     width: double.infinity,
+        //     decoration: BoxDecoration(
+        //       color: Colors.white,
+        //       borderRadius: BorderRadius.circular(8),
+        //       boxShadow: [
+        //         BoxShadow(
+        //           color: Colors.black.withOpacity(.3),
+        //           blurRadius: 4.0,
+        //           spreadRadius: 1.0,
+        //           offset: const Offset(0.0, 2.0),
+        //         ),
+        //       ],
+        //     ),
+        //     child: therapistScoreData.isEmpty
+        //         ? const Center(
+        //             child: Text(
+        //             "Exercise Performance Data not available.",
+        //             textAlign: TextAlign.center,
+        //             style: TextStyle(
+        //               fontFamily: "Alegreya_Sans",
+        //               fontSize: 18,
+        //             ),
+        //           ))
+        //         : Column(
+        //             mainAxisAlignment: MainAxisAlignment.spaceAround,
+        //             children: [
+        //               const Text(
+        //                 "Exercise Performance Scores",
+        //                 style: TextStyle(
+        //                   fontSize: 20,
+        //                   fontWeight: FontWeight.bold,
+        //                 ),
+        //               ),
+        //               _buildScoreRow(
+        //                   'Lips', therapistScoreData[0], Color(0xff25ADA4)),
+        //               _buildScoreRow(
+        //                   'Tongue', therapistScoreData[1], Color(0xff3498D8)),
+        //               _buildScoreRow('Breathing', therapistScoreData[2],
+        //                   Color(0xff9B59B6)),
+        //               _buildScoreRow(
+        //                   'Posture', therapistScoreData[3], Color(0xffE74C3C)),
+        //             ],
+        //           ),
+        //   ),
+        // ),
         Container(
           padding: const EdgeInsets.all(16),
-          height: 300,
+          height: 340,
           width: double.infinity,
           child: Container(
             padding: const EdgeInsets.all(10),
@@ -1796,39 +2208,34 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
                 ),
               ],
             ),
-            child: therapistScoreData.isEmpty
+            child: assignedExerciseData.isEmpty
                 ? const Center(
-                    child: Text(
-                    "Exercise Performance Data not available.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: "Alegreya_Sans",
-                      fontSize: 18,
-                    ),
-                  ))
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      const Text(
-                        "Exercise Performance Scores",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      _buildScoreRow(
-                          'Lips', therapistScoreData[0], Color(0xff25ADA4)),
-                      _buildScoreRow(
-                          'Tongue', therapistScoreData[1], Color(0xff3498D8)),
-                      _buildScoreRow('Breathing', therapistScoreData[2],
-                          Color(0xff9B59B6)),
-                      _buildScoreRow(
-                          'Posture', therapistScoreData[3], Color(0xffE74C3C)),
-                    ],
+                child: Text(
+                  "Assigned Scores Data not available",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: "Alegreya_Sans",
+                    fontSize: 18,
                   ),
+                ))
+                : Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                const Text(
+                  "Assigned Scores Score",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                _buildExerciseRow('Lips', assignedExerciseData[0], Color(0xff25ADA4)),
+                _buildExerciseRow('Tongue', assignedExerciseData[1], Color(0xff3498D8)),
+                _buildExerciseRow('Breathing', assignedExerciseData[2], Color(0xff9B59B6)),
+                _buildExerciseRow('Posture', assignedExerciseData[3], Color(0xffE74C3C)),
+              ],
+            ),
           ),
         ),
-
         // Exercise Scores - Circular Progress
         Container(
           padding: const EdgeInsets.all(16),
@@ -1963,7 +2370,7 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
           ),
         ),
 
-        // Targeted Score Section
+        ///
         Container(
           padding: const EdgeInsets.all(16),
           height: 340,
@@ -1985,36 +2392,148 @@ class _PatientReportScreenState extends State<PatientReportScreen> {
             ),
             child: targetedExerciseData.isEmpty
                 ? const Center(
-                    child: Text(
-                    "Targeted Muscle Data not available",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: "Alegreya_Sans",
-                      fontSize: 18,
-                    ),
-                  ))
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      const Text(
-                        "Targeted Muscle Score",
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      _buildExerciseRow(
-                          'Lips', targetedExerciseData[0], Color(0xff25ADA4)),
-                      _buildExerciseRow(
-                          'Tongue', targetedExerciseData[1], Color(0xff3498D8)),
-                      _buildExerciseRow('Breathing', targetedExerciseData[2],
-                          Color(0xff9B59B6)),
-                      _buildExerciseRow('Posture', targetedExerciseData[3],
-                          Color(0xffE74C3C)),
-                    ],
+                child: Text(
+                  "Targeted Muscle Data not available",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: "Alegreya_Sans",
+                    fontSize: 18,
                   ),
+                ))
+                : Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                const Text(
+                  "Targeted Muscle Score",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                _buildExerciseRow('Lips', targetedExerciseData[0], Color(0xff25ADA4)),
+                _buildExerciseRow('Tongue', targetedExerciseData[1], Color(0xff3498D8)),
+                _buildExerciseRow('Breathing', targetedExerciseData[2], Color(0xff9B59B6)),
+                _buildExerciseRow('Posture', targetedExerciseData[3], Color(0xffE74C3C)),
+              ],
+            ),
           ),
         ),
+        ///
+        SfCartesianChart(
+          title: const ChartTitle(
+            text: "Exercise Performance by Category and Date",
+          ),
+          legend: const Legend(isVisible: true),
+          primaryXAxis: CategoryAxis(),
+          primaryYAxis: NumericAxis(
+            minimum: 0,
+            maximum: 100,
+            interval: 20,
+          ),
+          series: <CartesianSeries>[
+            ColumnSeries<DailyCategoryData, String>(
+              name: 'Lips',
+              dataSource: dailyChartData,
+              xValueMapper: (d, _) => d.date,
+              yValueMapper: (d, _) => d.lips,
+              color: Colors.green,
+            ),
+            ColumnSeries<DailyCategoryData, String>(
+              name: 'Tongue',
+              dataSource: dailyChartData,
+              xValueMapper: (d, _) => d.date,
+              yValueMapper: (d, _) => d.tongue,
+              color: Colors.blue,
+            ),
+            ColumnSeries<DailyCategoryData, String>(
+              name: 'Breathing',
+              dataSource: dailyChartData,
+              xValueMapper: (d, _) => d.date,
+              yValueMapper: (d, _) => d.breathing,
+              color: Colors.purple,
+            ),
+            ColumnSeries<DailyCategoryData, String>(
+              name: 'Posture',
+              dataSource: dailyChartData,
+              xValueMapper: (d, _) => d.date,
+              yValueMapper: (d, _) => d.posture,
+              color: Colors.red,
+            ),
+          ],
+        ),
+        ///
+        Container(
+          padding: const EdgeInsets.all(16),
+          width: double.infinity,
+          child: Container(
+            height: 300,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(.3),
+                  blurRadius: 4,
+                  spreadRadius: 1,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: categoryStatusData.isEmpty
+                ? const Center(child: Text("No category data available"))
+                : SfCartesianChart(
+              title: const ChartTitle(
+                text: "Category Wise Exercise Status Distribution (%)",
+              ),
+              legend: const Legend(
+                isVisible: true,
+                position: LegendPosition.top,
+              ),
+              primaryXAxis: CategoryAxis(),
+              primaryYAxis: NumericAxis(
+                minimum: 0,
+                maximum: 100,
+                interval: 20,
+              ),
+              series: <CartesianSeries>[
+                StackedColumnSeries<CategoryStatusData, String>(
+                  name: 'Completed',
+                  dataSource: categoryStatusData,
+                  xValueMapper: (data, _) => data.category,
+                  yValueMapper: (data, _) => data.completed,
+                  color: Colors.green,
+                ),
+                StackedColumnSeries<CategoryStatusData, String>(
+                  name: 'Delayed',
+                  dataSource: categoryStatusData,
+                  xValueMapper: (data, _) => data.category,
+                  yValueMapper: (data, _) => data.delayed,
+                  color: Colors.blue,
+                ),
+                StackedColumnSeries<CategoryStatusData, String>(
+                  name: 'Skipped',
+                  dataSource: categoryStatusData,
+                  xValueMapper: (data, _) => data.category,
+                  yValueMapper: (data, _) => data.skipped,
+                  color: Colors.orange,
+                ),
+                StackedColumnSeries<CategoryStatusData, String>(
+                  name: 'Missed',
+                  dataSource: categoryStatusData,
+                  xValueMapper: (data, _) => data.category,
+                  yValueMapper: (data, _) => data.missed,
+                  color: Colors.red,
+                ),
+              ],
+            ),
+          ),
+        ),
+
+
+
+
+        ///
 
         // Exercise Performance Chart
         /*Container(
@@ -2325,3 +2844,4 @@ class AccuracyData {
 
   AccuracyData(this.exercise, this.score);
 }
+
